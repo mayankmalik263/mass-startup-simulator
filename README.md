@@ -57,12 +57,6 @@ Right now, the project contains a basic Python/Tkinter starting point. The next 
 
 All original work in this repository belongs to the project owner only. This project is meant for personal learning and development, and no important logic or core implementation should be treated as AI-generated. AI may be used only as a helper for learning or boilerplate, not as the source of the project’s main ideas or control flow.
 
-## Getting Started
-
-```bash
-python input.py
-```
-
 ## Future Ideas
 
 - Add separate agent modules for each role
