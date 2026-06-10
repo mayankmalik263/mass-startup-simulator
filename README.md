@@ -41,7 +41,15 @@ This repository is primarily an experiment in project-based learning. The goal i
 
 ## Current State
 
-Right now, the project contains a basic Python/Tkinter starting point. The next step is to expand it into a real multi-agent simulator with separate roles, message exchange, and startup-planning output.
+Right now, the project contains a basic Python CLI input starting point (the prototype uses command-line input rather than a GUI/Tkinter). The next step is to expand it into a real multi-agent simulator with separate roles, message exchange, and startup-planning output.
+
+## Getting Started
+
+Run the prototype from the command line. The program currently prompts for input in the terminal and does not use a GUI.
+
+```bash
+python input.py
+```
 
 ## Example Output Flow
 
