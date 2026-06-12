@@ -3,6 +3,7 @@ from agents.ceo_agent import CEOAgent
 from agents.finance_agent import FinanceAgent
 from agents.marketing_agent import MarketingAgent
 from agents.product_agent import ProductAgent
+from agents.sales_agent import SalesAgent
 
 def run(idea: str):
     state = create_state(idea)
@@ -34,13 +35,22 @@ def run(idea: str):
         "message": marketing_response
     })
     
-    # Product reads everyone → builds roadmap
+    # Product reads everyone
     print("🛠️ Product Agent thinking...\n")
     product = ProductAgent()
     product_response = product.think(state)
     state["messages"].append({
         "agent": "Product",
         "message": product_response
+    })
+    
+    # Sales reads everyone → closes the loop
+    print("🤝 Sales Agent thinking...\n")
+    sales = SalesAgent()
+    sales_response = sales.think(state)
+    state["messages"].append({
+        "agent": "Sales",
+        "message": sales_response
     })
     
     # print all
@@ -63,6 +73,11 @@ def run(idea: str):
     print("PRODUCT ROADMAP")
     print("=" * 50)
     print(product_response)
+    
+    print("\n" + "=" * 50)
+    print("SALES STRATEGY")
+    print("=" * 50)
+    print(sales_response)
     
     print("\n📋 STATE SNAPSHOT:")
     print(f"Messages logged: {len(state['messages'])}")
