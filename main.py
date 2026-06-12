@@ -1,4 +1,4 @@
-from orchestrator import run
+from graph_orchestrator import run
 
 if __name__ == "__main__":
     idea = input("Enter startup idea: ")
