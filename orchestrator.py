@@ -1,6 +1,7 @@
 from state import create_state
 from agents.ceo_agent import CEOAgent
 from agents.finance_agent import FinanceAgent
+from agents.marketing_agent import MarketingAgent
 
 def run(idea: str):
     state = create_state(idea)
@@ -14,7 +15,7 @@ def run(idea: str):
         "message": ceo_response
     })
     
-    # Finance reads CEO output → reacts
+    # Finance reacts to CEO
     print("💰 Finance Agent thinking...\n")
     finance = FinanceAgent()
     finance_response = finance.think(state)
@@ -23,7 +24,16 @@ def run(idea: str):
         "message": finance_response
     })
     
-    # print both
+    # Marketing reacts to CEO + Finance
+    print("📣 Marketing Agent thinking...\n")
+    marketing = MarketingAgent()
+    marketing_response = marketing.think(state)
+    state["messages"].append({
+        "agent": "Marketing",
+        "message": marketing_response
+    })
+    
+    # print all
     print("=" * 50)
     print("CEO ANALYSIS")
     print("=" * 50)
@@ -33,6 +43,11 @@ def run(idea: str):
     print("FINANCE ANALYSIS")
     print("=" * 50)
     print(finance_response)
+    
+    print("\n" + "=" * 50)
+    print("MARKETING ANALYSIS")
+    print("=" * 50)
+    print(marketing_response)
     
     print("\n📋 STATE SNAPSHOT:")
     print(f"Messages logged: {len(state['messages'])}")
