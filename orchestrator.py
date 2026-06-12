@@ -4,6 +4,8 @@ from agents.finance_agent import FinanceAgent
 from agents.marketing_agent import MarketingAgent
 from agents.product_agent import ProductAgent
 from agents.sales_agent import SalesAgent
+from report_generator import generate_report
+from save_report import save_state
 
 def run(idea: str):
     state = create_state(idea)
@@ -44,7 +46,7 @@ def run(idea: str):
         "message": product_response
     })
     
-    # Sales reads everyone → closes the loop
+    # Sales reads everyone
     print("🤝 Sales Agent thinking...\n")
     sales = SalesAgent()
     sales_response = sales.think(state)
@@ -53,7 +55,12 @@ def run(idea: str):
         "message": sales_response
     })
     
-    # print all
+    # Final report
+    print("📊 Generating final report...\n")
+    report = generate_report(state)
+    state["final_report"] = report
+    
+    # print individual agents
     print("=" * 50)
     print("CEO ANALYSIS")
     print("=" * 50)
@@ -78,6 +85,15 @@ def run(idea: str):
     print("SALES STRATEGY")
     print("=" * 50)
     print(sales_response)
+    
+    # print final report
+    print("\n" + "=" * 50)
+    print("FINAL STARTUP REPORT")
+    print("=" * 50)
+    print(report)
+    
+    # save everything
+    save_state(state, report)
     
     print("\n📋 STATE SNAPSHOT:")
     print(f"Messages logged: {len(state['messages'])}")
