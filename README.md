@@ -2,6 +2,11 @@
 
 > One sentence in. Five agents debate. A complete startup plan comes out.
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-green.svg)
+![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-orange.svg)
+
 ---
 
 ## What this is
@@ -117,7 +122,8 @@ MASS/
 ├── report_generator.py
 ├── requirements.txt
 ├── save_report.py
-└── state.py
+├── state.py
+└── LICENSE
 ```
 
 ---
@@ -182,6 +188,14 @@ Most college projects are CRUD apps, ML models in Flask, or todo lists. This one
 Multi-agent systems are how real AI products are being built right now. Companies like Harvey, Cognition, and most serious LLM startups are running systems where multiple agents with different roles coordinate, debate, and produce structured outputs together. MASS is a ground-up implementation of that pattern, built without relying on frameworks to hide what's actually happening.
 
 The goal was to understand how agent communication works, why shared state matters, what makes a supervisor pattern useful, and how to structure a system that produces consistent output across unpredictable LLM responses. Every architectural decision here was made by hand.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 Mayank Malik
 
 ---
 
