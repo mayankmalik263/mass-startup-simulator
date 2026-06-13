@@ -153,8 +153,18 @@ def build_graph():
 
 # ── run ──────────────────────────────────────────────────
 
-def run(idea: str):
-    state = create_state(idea)
+def run(idea: str, context: dict = None):
+    if context is None:
+        context = {}
+    
+    state = create_state(
+        idea=idea,
+        target_audience=context.get("target_audience", ""),
+        market=context.get("market", ""),
+        revenue_model=context.get("revenue_model", ""),
+        constraints=context.get("constraints", "")
+    )
+    
     app = build_graph()
     
     final_state = app.invoke(state)
