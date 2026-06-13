@@ -10,16 +10,27 @@ client = OpenAI(
 )
 def _context_block(state: dict) -> str:
     return f"""
-MANDATORY CONTEXT — DO NOT DEVIATE FROM THESE:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Target Audience : {state.get('target_audience', 'not specified')}
+HARD CONSTRAINTS — TREAT THESE AS ABSOLUTE RULES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Market          : {state.get('market', 'not specified')}
+Target Audience : {state.get('target_audience', 'not specified')}
 Revenue Model   : {state.get('revenue_model', 'not specified')}
 Constraints     : {state.get('constraints', 'none')}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every number, strategy, and recommendation you make
-must fit within these boundaries. Do not invent a
-different audience or market.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VIOLATIONS THAT WILL MAKE YOUR OUTPUT WRONG:
+❌ DO NOT suggest US/SF salary benchmarks if market is India
+❌ DO NOT suggest VC funding if constraint is bootstrapped
+❌ DO NOT suggest Series A if constraint is bootstrapped
+❌ DO NOT use USD pricing if market is India (use INR)
+❌ DO NOT reference US consumer behavior if market is India
+
+WHAT CORRECT OUTPUT LOOKS LIKE FOR THIS CONTEXT:
+✅ Salaries in INR at Indian market rates
+✅ Bootstrap-friendly burn (under ₹5-10L/month)
+✅ Revenue from day 1, no external funding
+✅ Indian SaaS/app pricing (₹99-₹999/month)
+✅ Indian corporate wellness context
 """
 class FinanceAgent:
     def think(self, state: dict) -> str:
