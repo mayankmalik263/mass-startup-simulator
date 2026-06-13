@@ -9,7 +9,19 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
-
+def _context_block(state: dict) -> str:
+    return f"""
+MANDATORY CONTEXT — DO NOT DEVIATE FROM THESE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Target Audience : {state.get('target_audience', 'not specified')}
+Market          : {state.get('market', 'not specified')}
+Revenue Model   : {state.get('revenue_model', 'not specified')}
+Constraints     : {state.get('constraints', 'none')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Every number, strategy, and recommendation you make
+must fit within these boundaries. Do not invent a
+different audience or market.
+"""
 class SupervisorAgent:
     def evaluate(self, state: dict) -> dict:
         idea = state["startup_idea"]
@@ -50,8 +62,7 @@ Respond ONLY with valid JSON in this exact format:
 }}
 
 No text before or after the JSON.
-"""
-        
+"""  
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b:free",
             messages=[{"role": "user", "content": prompt}]

@@ -8,7 +8,19 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
-
+def _context_block(state: dict) -> str:
+    return f"""
+MANDATORY CONTEXT — DO NOT DEVIATE FROM THESE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Target Audience : {state.get('target_audience', 'not specified')}
+Market          : {state.get('market', 'not specified')}
+Revenue Model   : {state.get('revenue_model', 'not specified')}
+Constraints     : {state.get('constraints', 'none')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Every number, strategy, and recommendation you make
+must fit within these boundaries. Do not invent a
+different audience or market.
+"""
 class CEOAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
@@ -25,8 +37,7 @@ Your job:
 4. Give 3 key strategic decisions to move forward
 
 Be direct. Be strategic. No fluff.
-"""
-        
+"""  
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b:free",
             messages=[
