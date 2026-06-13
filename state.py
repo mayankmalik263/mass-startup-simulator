@@ -6,24 +6,40 @@ class StartupState(TypedDict):
     decisions: list
     final_report: str
     
-    # Phase 2 additions
-    iteration: int          # which debate round are we on
-    max_iterations: int     # stop infinite loops
-    ceo_finance_agreed: bool    # did CEO + Finance reach consensus?
-    conflicts: list         # what agents disagreed on
-    current_speaker: str    # who speaks next (supervisor uses this)
+    # Phase 2
+    iteration: int
+    max_iterations: int
+    ceo_finance_agreed: bool
+    conflicts: list
+    current_speaker: str
     
-def create_state(idea: str) -> StartupState:
+    # User context (new)
+    target_audience: str
+    market: str
+    revenue_model: str
+    constraints: str
+
+def create_state(
+    idea: str,
+    target_audience: str = "",
+    market: str = "",
+    revenue_model: str = "",
+    constraints: str = ""
+) -> StartupState:
     return {
         "startup_idea": idea,
         "messages": [],
         "decisions": [],
         "final_report": "",
         
-        # Phase 2 defaults
         "iteration": 0,
         "max_iterations": 3,
         "ceo_finance_agreed": False,
         "conflicts": [],
-        "current_speaker": "CEO"
+        "current_speaker": "CEO",
+        
+        "target_audience": target_audience,
+        "market": market,
+        "revenue_model": revenue_model,
+        "constraints": constraints
     }
