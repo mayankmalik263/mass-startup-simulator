@@ -25,9 +25,10 @@ def get_user_context(idea: str) -> dict:
     ).strip()
 
     constraints = input(
-        "\n4. Any hard constraints?\n"
-        "   (e.g. bootstrap only, no VC, mobile-first, under $10/mo pricing)\n"
-        "   → "
+    "\n4. Any hard constraints?\n"
+    "   (e.g. bootstrapped, no VC, mobile-first, Indian pricing only)\n"
+    "   TIP: Be specific — 'bootstrapped' means no VC, revenue from day 1\n"
+    "   → "
     ).strip()
 
     print("\n" + "=" * 50)
