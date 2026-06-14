@@ -8,6 +8,7 @@ from agents.sales_agent import SalesAgent
 from agents.supervisor_agent import SupervisorAgent
 from report_generator import generate_report
 from save_report import save_state
+from structured_extractor import extract_structured_plan
 
 # ── node functions ──────────────────────────────────────
 
@@ -89,7 +90,15 @@ def report_node(state: StartupState) -> StartupState:
     print("📊 Generating final report...\n")
     report = generate_report(state)
     state["final_report"] = report
-    save_state(state, report)
+    
+    print("🧱 Extracting structured business plan...\n")
+    business_plan = extract_structured_plan(report, state["startup_idea"])
+    
+    save_state(state, report, business_plan)
+    
+    if business_plan:
+        state["business_plan"] = business_plan.model_dump()
+    
     return state
 
 # ── routing functions ────────────────────────────────────

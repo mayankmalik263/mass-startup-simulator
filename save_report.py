@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 
-def save_state(state: dict, report: str):
+def save_state(state: dict, report: str, business_plan=None):
     os.makedirs("outputs", exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -18,5 +18,11 @@ def save_state(state: dict, report: str):
     
     print(f"\n💾 Saved to: {filename}.json")
     print(f"📄 Report saved to: {filename}.txt")
+    
+    if business_plan is not None:
+        plan_path = f"{filename}_plan.json"
+        with open(plan_path, "w", encoding="utf-8") as f:
+            f.write(business_plan.model_dump_json(indent=2))
+        print(f"🧱 Structured plan saved to: {plan_path}")
     
     return filename

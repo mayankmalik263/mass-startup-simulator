@@ -5,6 +5,7 @@ class StartupState(TypedDict):
     messages: list
     decisions: list
     final_report: str
+    business_plan: dict
     
     # Phase 2
     iteration: int
@@ -31,6 +32,7 @@ def create_state(
         "messages": [],
         "decisions": [],
         "final_report": "",
+        "business_plan": {},
         
         "iteration": 0,
         "max_iterations": 3,
