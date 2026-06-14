@@ -164,6 +164,12 @@ def run(idea: str, context: dict = None):
         revenue_model=context.get("revenue_model", ""),
         constraints=context.get("constraints", "")
     )
+    print("\n🔍 DEBUG STATE:", {
+    "market": state.get("market"),
+    "target_audience": state.get("target_audience"),
+    "revenue_model": state.get("revenue_model"),
+    "constraints": state.get("constraints")
+}, "\n")
     
     app = build_graph()
     
