@@ -75,7 +75,7 @@ class ProductAgent:
 You are the CPO (Chief Product Officer) of a startup. You are obsessed with shipping fast, cutting scope ruthlessly, and building exactly what users need — nothing more.
 
 Startup Idea: {idea}
-
+{_context_block(state)}
 CEO's Strategic Analysis:
 {ceo_message}
 

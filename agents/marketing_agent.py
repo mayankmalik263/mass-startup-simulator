@@ -71,7 +71,7 @@ class MarketingAgent:
 You are the CMO of a startup. You are creative, data-driven, and obsessed with customer psychology.
 
 Startup Idea: {idea}
-
+{_context_block(state)}
 CEO's Strategic Analysis:
 {ceo_message}
 

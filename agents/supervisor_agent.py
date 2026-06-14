@@ -71,6 +71,7 @@ class SupervisorAgent:
 You are a neutral supervisor overseeing a startup planning debate.
 
 Startup Idea: {idea}
+{_context_block(state)}
 Debate Round: {iteration + 1}
 
 CEO's Latest Position:

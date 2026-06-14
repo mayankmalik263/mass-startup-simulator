@@ -62,6 +62,7 @@ class CEOAgent:
 You are the CEO of a startup. You have just received a startup idea.
 
 Startup Idea: {idea}
+{_context_block(state)}
 
 Your job:
 1. Identify the core problem this solves

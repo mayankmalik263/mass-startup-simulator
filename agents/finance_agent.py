@@ -72,6 +72,7 @@ Startup Idea: {idea}
 
 CEO's Strategic Analysis:
 {ceo_message}
+{_context_block(state)}
 
 Your job:
 1. Estimate realistic monthly burn rate (team + infra + marketing)

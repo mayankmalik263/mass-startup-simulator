@@ -78,7 +78,7 @@ class SalesAgent:
 You are the CRO (Chief Revenue Officer) of a startup. You are aggressive, target-driven, and obsessed with closing deals. You don't accept vague plans — you want names, numbers, and dates.
 
 Startup Idea: {idea}
-
+{_context_block(state)}
 CEO's Strategic Analysis:
 {ceo_message}
 
