@@ -164,21 +164,29 @@ This makes it easy to connect the simulator to a frontend, dashboard, or interna
 
 ---
 
-## 📈 Why This Project Stands Out
+## 💡 Why This Project Matters To Me
 
-For a third-year student project, MASS is stronger than a typical CRUD app or generic AI wrapper because it shows systems thinking. It demonstrates orchestration, shared state, prompt design, structured output, and a real attempt at productizing the idea.
+I built MASS because I kept running into the same frustration: people love saying, "build a startup," but they rarely explain what happens after the idea.
 
-The most valuable part is not just that it uses AI. It shows how multiple specialized agents can collaborate, disagree, and converge on a decision. That is a relevant pattern in the current AI market, and it is exactly the kind of thing recruiters notice when they want to see more than a tutorial clone.
+As a student, I do not have a CEO, a product manager, a finance advisor, or a marketing team sitting next to me. I had access to great general-purpose AI tools, but I wanted something that felt more specific to startup thinking, something that could challenge ideas instead of just generating them.
+
+That is what led me to build MASS. I wanted a system where five different AI agents could act like a founding team, debate a startup idea from different angles, and force each other toward a realistic decision. What started as a side project became a deeper learning experience about system design, LangGraph, shared state, disagreement handling, and how to keep multiple LLMs from drifting into different realities.
+
+The best part is that I ended up building something I genuinely wanted for myself. At the same time, I got to go deeper into multi-agent architecture in a way that felt practical, not theoretical.
+
+Right now MASS is still a CLI app, but I see it becoming a proper product with a UI, API, and evaluation framework so anyone can use it to pressure-test startup ideas.
 
 ---
 
-## 🔭 Roadmap
+## 🔭 Future Improvements
 
-- Add stricter Pydantic validation across agent outputs.
-- Improve evaluation and reliability with test coverage.
-- Build a frontend for live agent visibility.
-- Add richer analytics and simulation history.
-- Make the structured plan easier to query and compare across runs.
+Here is what I am thinking of improving next:
+
+- I want to turn the CLI flow into a proper web UI so the debate feels interactive.
+- I want to add a stronger evaluation framework so I can measure output quality and consistency.
+- I want to tighten structured validation across agent outputs so the final plan is more reliable.
+- I want to build a clearer history layer so runs can be compared and reused later.
+- I want to make the simulator easier for other people to try without touching the code.
 
 ---
 
