@@ -1,204 +1,193 @@
 # MASS — Multi-Agent Startup Simulator
 
-> One sentence in. Five agents debate. A complete startup plan comes out.
+<p align="center">
+    <strong>One idea in. A full startup plan out.</strong>
+</p>
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-green.svg)
-![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-orange.svg)
-
----
-
-## What this is
-
-MASS is a Python system that simulates a startup founding team as AI agents. You give it one idea. It runs a structured debate between five domain experts, each one reading what the others said and reacting to it, until they reach consensus on a business plan.
-
-It is not a template filler. The Finance agent challenges the CEO's budget assumptions. The Product agent cuts features Finance says they can't afford. The Sales agent calls out when Marketing's CAC numbers don't hold up. A Supervisor agent watches all of it, routes disagreements back for another round, and calls consensus when the team is aligned.
-
-The output is a full startup brief, saved as JSON and plain text, covering mission, pricing, roadmap, financial snapshot, revenue targets, key conflicts, and a final verdict on viability.
+<p align="center">
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" /></a>
+    <a href="https://www.langchain.com/langgraph"><img src="https://img.shields.io/badge/LangGraph-State%20Machine-22C55E?style=for-the-badge" alt="LangGraph" /></a>
+    <a href="https://openrouter.ai/"><img src="https://img.shields.io/badge/OpenRouter-OpenAI%20Compatible-F97316?style=for-the-badge" alt="OpenRouter" /></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Available-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" /></a>
+</p>
 
 ---
 
-## How the debate works
+## ✨ Overview
 
-```
-You type: "Launch a fitness app"
-                ↓
-         Orchestrator (LangGraph)
-                ↓
-          ┌─── CEO proposes vision
-          │         ↓
-          │    Finance reacts, challenges numbers
-          │         ↓
-          │    Supervisor checks: did they agree?
-          │         │
-          │    NO ──┘  (loop back, max 3 rounds)
-          │         │
-          │    YES ──────────────────────────────┐
-          │                                      ↓
-          │                              Marketing reacts
-          │                                      ↓
-          │                              Product scopes MVP
-          │                                      ↓
-          │                              Sales closes the loop
-          └──────────────────────────────────────┓
-                                                 ↓
-                                        Final Report Generator
-                                                 ↓
-                              outputs/your_idea_timestamp.json
-                              outputs/your_idea_timestamp.txt
-```
+MASS is a Python-based multi-agent startup simulator that turns a single business idea into a structured founder-style debate. Instead of generating a one-shot answer, it runs the idea through specialized agents for CEO, Finance, Marketing, Product, Sales, and a Supervisor that checks whether the team has actually reached workable consensus.
 
-Agents share one central memory object called `state`. Nobody calls anyone directly. They read from state, write to state, and the next agent picks up where the last one left off.
+The result is a practical startup brief saved as JSON and plain text, covering the mission, problem statement, target customer, business model, financial snapshot, go-to-market plan, MVP scope, revenue targets, conflicts, and final verdict.
 
-```python
-class StartupState(TypedDict):
-    startup_idea: str
-    messages: list          # full debate transcript
-    decisions: list         # what got agreed on
-    conflicts: list         # what agents disagreed about
-    iteration: int          # which debate round we're on
-    ceo_finance_agreed: bool
-    final_report: str
-```
+This project is intentionally more than a prompt wrapper. It uses a LangGraph state machine, shared state, conflict tracking, structured extraction, and a FastAPI layer so the architecture feels closer to a real AI product workflow.
 
 ---
 
-## What a real run looks like
+## 🚀 What It Does
 
-```bash
-python main.py
-# Enter startup idea: Launch a fitness app
+### Multi-agent debate loop
+- CEO proposes the startup direction and initial strategy.
+- Finance pushes back on pricing, burn, runway, and feasibility.
+- Supervisor checks whether CEO and Finance have reached a usable agreement.
+- Marketing, Product, and Sales then refine the plan from their own perspectives.
+- The final report reflects the negotiated output, not just a single model response.
 
-# 🤖 CEO Agent thinking... (round 1)
-# 💰 Finance Agent thinking... (round 1)
-# 🎯 Supervisor checking consensus...
-#   Supervisor verdict: ❌ NOT AGREED
-#   Reason: CEO wants ML engine, Finance says budget doesn't support it
+### Structured output
+- Generates a readable business report.
+- Extracts a validated structured business plan.
+- Persists outputs to the `outputs/` directory as JSON, TXT, and structured plan files.
 
-# 🔄 No consensus yet. Round 2 starting.
-
-# 🤖 CEO Agent thinking... (round 2)
-# 💰 Finance Agent thinking... (round 2)
-# 🎯 Supervisor checking consensus...
-#   Supervisor verdict: ✅ AGREED
-#   Reason: CEO accepted rule-based MVP first
-
-# ✅ CEO + Finance agreed. Moving to Marketing.
-
-# 📣 Marketing Agent thinking...
-# 🛠️  Product Agent thinking...
-# 🤝 Sales Agent thinking...
-# 📊 Generating final report...
-
-# Messages logged: 9
-# Debate rounds: 2
-# Conflicts detected: 6
-```
-
-The output covers ten sections: mission, the core problem, target customer, business model with pricing tiers, financial snapshot, first 30-day go-to-market plan, MVP feature list, revenue targets at Day 30/60/90, key conflicts detected between agents, and a final verdict.
+### Product-style interface
+- CLI entry point for quick simulation runs.
+- FastAPI endpoint for programmatic use.
+- Ready for a future frontend or workflow dashboard.
 
 ---
 
-## Project structure
+## 🧠 How It Works
 
+```mermaid
+flowchart TD
+        A[User enters startup idea] --> B[Context intake]
+        B --> C[LangGraph orchestrator]
+        C --> D[CEO]
+        D --> E[Finance]
+        E --> F[Supervisor checks consensus]
+        F -->|No| D
+        F -->|Yes| G[Marketing]
+        G --> H[Product]
+        H --> I[Sales]
+        I --> J[Final report generator]
+        J --> K[Structured extractor]
+        K --> L[Saved JSON + TXT output]
 ```
+
+All agents read from and write to one shared state object. That keeps the workflow deterministic enough to inspect, while still allowing the LLMs to debate and revise their positions.
+
+---
+
+## 📦 Key Features
+
+- **Role-separated agents:** each function has a distinct business lens.
+- **Consensus gating:** the supervisor decides whether CEO and Finance need another round.
+- **Conflict capture:** disagreements are recorded instead of being silently overwritten.
+- **Context-aware prompting:** user inputs like target audience, market, revenue model, and constraints influence outputs.
+- **Structured extraction:** the final report is converted into a typed business-plan object.
+- **API-ready design:** the FastAPI layer exposes the simulator for external clients.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tool |
+|---|---|
+| Orchestration | LangGraph state machine |
+| LLM access | OpenRouter |
+| Backend | Python |
+| Shared state | TypedDict |
+| API | FastAPI |
+| Output | JSON, TXT, structured plan |
+
+---
+
+## 🧩 Project Structure
+
+```text
 MASS/
 ├── agents/
-│   ├── __init__.py
 │   ├── ceo_agent.py
 │   ├── finance_agent.py
 │   ├── marketing_agent.py
 │   ├── product_agent.py
 │   ├── sales_agent.py
-│   └── supervisor_agent.py     ← Phase 2: debate controller
-├── outputs/                    ← saved JSON + TXT reports
-├── .env                        ← API key (never committed)
-├── .env.example
-├── .gitignore
-├── graph_orchestrator.py       ← Phase 2: LangGraph state machine
+│   └── supervisor_agent.py
+├── api.py
+├── graph_orchestrator.py
+├── intake.py
+├── job_store.py
 ├── main.py
-├── orchestrator.py             ← Phase 1: sequential pipeline (kept)
+├── models.py
 ├── report_generator.py
-├── requirements.txt
 ├── save_report.py
 ├── state.py
-└── LICENSE
+├── structured_extractor.py
+├── outputs/
+└── requirements.txt
 ```
 
 ---
 
-## Setup
+## ⚙️ Getting Started
+
+### Prerequisites
+- Python 3.10+
+- An OpenRouter API key
+
+### Setup
 
 ```bash
-git clone https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-
-cd Mass-Multi-Agent-STARTUP-Simulator-
+git clone https://github.com/mayankmalik263/MASS.git
+cd MASS
 
 python -m venv venv
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # Mac/Linux
+venv\Scripts\activate
 
 pip install -r requirements.txt
 
-cp .env.example .env
-# Add your OpenRouter API key to .env
+copy .env.example .env
+# Add your OPENROUTER_API_KEY to .env
 
 python main.py
 ```
 
----
+### CLI flow
 
-## Tech stack
+```bash
+python main.py
+```
 
-| Layer | Tool |
-|---|---|
-| Agent orchestration | LangGraph (state machine with conditional edges) |
-| LLM calls | OpenRouter (OpenAI-compatible, free models) |
-| Shared state | Python TypedDict |
-| Output format | JSON + plain text |
-| API layer | FastAPI (planned) |
-| Frontend | Next.js (planned) |
+Then enter your startup idea and optional context details when prompted.
 
 ---
 
-## Phase 1 vs Phase 2
+## 🌐 API
 
-**Phase 1** was a sequential pipeline. Each agent spoke once, in a fixed order, and that was it. No pushback, no revision, no routing.
+The project also includes a FastAPI service in [api.py](api.py).
 
-**Phase 2** replaced that with a LangGraph state machine. The CEO and Finance agent now negotiate across multiple rounds before Marketing even speaks. A Supervisor agent watches the debate, detects when they're stuck, and either routes them back for another round or forces consensus if they hit the iteration limit. Conflicts get logged. Decisions get recorded. The final report reflects what actually got agreed on, not just what each agent said in isolation.
+### Endpoints
+- `GET /` returns basic service status.
+- `POST /simulate` starts a background simulation.
+- `GET /simulate/{job_id}` fetches job status and results.
 
-The debate loop is capped at 3 rounds by default to keep costs and runtime reasonable. That limit is configurable.
-
----
-
-## What's planned next
-
-**Pydantic structured output** — right now agents return free-form text. The next step is wrapping each output in a validated Pydantic model so the business plan is a typed Python object you can query and version.
-
-**FastAPI endpoint** — expose the simulator as a REST API. Send a POST request with a startup idea, get back a structured business plan as JSON.
-
-**Live frontend** — a Next.js interface where you can watch the agents debate in real time as tokens stream in.
+This makes it easy to connect the simulator to a frontend, dashboard, or internal tool.
 
 ---
 
-## Why this project exists
+## 📈 Why This Project Stands Out
 
-Most college projects are CRUD apps, ML models in Flask, or todo lists. This one is different.
+For a third-year student project, MASS is stronger than a typical CRUD app or generic AI wrapper because it shows systems thinking. It demonstrates orchestration, shared state, prompt design, structured output, and a real attempt at productizing the idea.
 
-Multi-agent systems are how real AI products are being built right now. Companies like Harvey, Cognition, and most serious LLM startups are running systems where multiple agents with different roles coordinate, debate, and produce structured outputs together. MASS is a ground-up implementation of that pattern, built without relying on frameworks to hide what's actually happening.
-
-The goal was to understand how agent communication works, why shared state matters, what makes a supervisor pattern useful, and how to structure a system that produces consistent output across unpredictable LLM responses. Every architectural decision here was made by hand.
+The most valuable part is not just that it uses AI. It shows how multiple specialized agents can collaborate, disagree, and converge on a decision. That is a relevant pattern in the current AI market, and it is exactly the kind of thing recruiters notice when they want to see more than a tutorial clone.
 
 ---
 
-## License
+## 🔭 Roadmap
+
+- Add stricter Pydantic validation across agent outputs.
+- Improve evaluation and reliability with test coverage.
+- Build a frontend for live agent visibility.
+- Add richer analytics and simulation history.
+- Make the structured plan easier to query and compare across runs.
+
+---
+
+## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Copyright (c) 2026 Mayank Malik
-
 ---
 
-## Ownership
+## 👤 Ownership
 
-All original work belongs to Mayank Malik. AI was used as a learning tool and for boilerplate. The architecture decisions, state design, agent boundaries, debate logic, and conflict-handling were built manually.
+Original work belongs to Mayank Malik. AI tools were used as a productivity aid, but the architecture, agent boundaries, debate flow, and state design were developed manually.
