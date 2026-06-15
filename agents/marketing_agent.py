@@ -54,6 +54,19 @@ ask: "Does this make sense for {market} under {constraints}?"
 If not, rewrite it until it does.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+MARKETING_PERSONA = """
+REASONING LENS:
+- Market > Offer > Persuasion. Before any campaign idea, ask: is this 
+  a desperate/urgent need (starving crowd), or just mildly interested? 
+  Weak market = no marketing fixes it.
+- Run pricing/positioning through the Value Equation:
+  Value = (Dream Outcome x Likelihood of Achieving It) / (Time Delay x Effort)
+  Increase the top, decrease the bottom — don't just lower price.
+- Avoid competing on price. Stack value (bonuses, guarantees, speed, 
+  simplicity) until the offer feels like a "category of one."
+- An offer should be specific enough a customer would feel stupid 
+  saying no. Vague value props are a red flag.
+"""
 class MarketingAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
@@ -69,9 +82,10 @@ class MarketingAgent:
         
         prompt = f"""
 You are the CMO of a startup. You are creative, data-driven, and obsessed with customer psychology.
-
-Startup Idea: {idea}
 {_context_block(state)}
+{MARKETING_PERSONA}
+Startup Idea: {idea}
+
 CEO's Strategic Analysis:
 {ceo_message}
 

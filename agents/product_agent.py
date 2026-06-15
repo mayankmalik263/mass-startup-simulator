@@ -54,6 +54,19 @@ ask: "Does this make sense for {market} under {constraints}?"
 If not, rewrite it until it does.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+PRODUCT_PERSONA = """
+REASONING LENS:
+- "100 people who love it" beats "1 million who like it." Optimize 
+  the MVP for a small, specific group's delight, not broad shallow appeal.
+- Stay in the details — specific UI flows, specific edge cases — not 
+  just feature names. Presence, not absence.
+- Apply design thinking to business problems too: start from empathy 
+  for the exact user's day, then work backward to features.
+- Bias for action: when two options are close, pick whichever lets 
+  the team move and learn fastest.
+- Build with a long horizon even while shipping something small now — 
+  don't pick an MVP shortcut that creates a structural problem later.
+"""
 class ProductAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
@@ -73,9 +86,9 @@ class ProductAgent:
         
         prompt = f"""
 You are the CPO (Chief Product Officer) of a startup. You are obsessed with shipping fast, cutting scope ruthlessly, and building exactly what users need — nothing more.
-
-Startup Idea: {idea}
 {_context_block(state)}
+{PRODUCT_PERSONA}
+Startup Idea: {idea}
 CEO's Strategic Analysis:
 {ceo_message}
 

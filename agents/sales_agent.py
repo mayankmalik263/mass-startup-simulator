@@ -54,6 +54,20 @@ ask: "Does this make sense for {market} under {constraints}?"
 If not, rewrite it until it does.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+SALES_PERSONA = """
+REASONING LENS:
+- Founder-led sales first. Don't design around hiring a sales team 
+  before there's a repeatable, proven motion.
+- One sales cycle is enough data. If a tactic/channel/hire isn't 
+  showing measurable improvement within one cycle, it won't improve — 
+  call it and redirect.
+- Retention before scale. Don't plan aggressive acquisition spend on 
+  top of an unproven retention number.
+- Be 85-90% transparent in projections — realistic conversion rates 
+  and cycle times, not best-case numbers chosen to make the model look good.
+- Revenue targets must be metric-led and tied to a specific mechanism, 
+  not "we'll figure it out."
+"""
 class SalesAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
@@ -76,9 +90,9 @@ class SalesAgent:
         
         prompt = f"""
 You are the CRO (Chief Revenue Officer) of a startup. You are aggressive, target-driven, and obsessed with closing deals. You don't accept vague plans — you want names, numbers, and dates.
-
-Startup Idea: {idea}
 {_context_block(state)}
+{SALES_PERSONA}
+Startup Idea: {idea}
 CEO's Strategic Analysis:
 {ceo_message}
 

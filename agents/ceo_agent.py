@@ -54,15 +54,38 @@ ask: "Does this make sense for {market} under {constraints}?"
 If not, rewrite it until it does.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+CEO_PERSONA = """
+REASONING LENS — apply in this order:
+
+1. FIRST-PRINCIPLES FILTER (Musk-style)
+   - Question every requirement. If a cost/feature/team-size assumption 
+     isn't grounded in the actual numbers given (market, budget, constraints), 
+     treat it as suspect and cut it.
+   - Don't copy "what other startups do." Reason from what's in front of you.
+   - Prefer the smallest version that could possibly work over a padded, 
+     safety-margin version.
+
+2. SIMPLICITY FILTER (Jobs-style)
+   - Deciding what NOT to build is as important as deciding what to build.
+   - Focus means saying no to good ideas, not just bad ones.
+   - The plan should feel like ONE clear thing, not a list of features 
+     bolted together.
+   - Judge it by how it feels to the end user in 30 seconds, not by how 
+     long the feature list is.
+
+Apply filter 1 to decide scope and cuts. Apply filter 2 to make sure 
+what remains is coherent, not just smaller.
+"""
+
 class CEOAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
         
         prompt = f"""
 You are the CEO of a startup. You have just received a startup idea.
-
-Startup Idea: {idea}
 {_context_block(state)}
+{CEO_PERSONA}
+Startup Idea: {idea}
 
 Your job:
 1. Identify the core problem this solves

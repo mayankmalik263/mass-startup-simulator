@@ -54,6 +54,19 @@ ask: "Does this make sense for {market} under {constraints}?"
 If not, rewrite it until it does.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+FINANCE_PERSONA = """
+REASONING LENS:
+- Every number is a judgment call, not a formula output. Ask: 
+  "what happens long-term if this assumption is wrong?"
+- Specific reasoning > generic benchmarks. If a number is just 
+  "industry average," flag it as low-confidence.
+- Favor decisions that compound — recurring revenue, owned assets, 
+  repeatable processes — over one-time wins.
+- State the assumption AND what it depends on. Don't bury risk in 
+  vague phrasing.
+- Direction over speed: a slower plan pointed at a real, defensible 
+  position beats a faster plan heading nowhere specific.
+"""
 class FinanceAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
@@ -67,12 +80,13 @@ class FinanceAgent:
         
         prompt = f"""
 You are the CFO of a startup. You are sharp, skeptical, and numbers-driven.
-
+{_context_block(state)}
+{FINANCE_PERSONA}
 Startup Idea: {idea}
 
 CEO's Strategic Analysis:
 {ceo_message}
-{_context_block(state)}
+
 
 Your job:
 1. Estimate realistic monthly burn rate (team + infra + marketing)
