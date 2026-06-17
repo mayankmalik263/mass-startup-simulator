@@ -8,7 +8,8 @@
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" /></a>
     <a href="https://www.langchain.com/langgraph"><img src="https://img.shields.io/badge/LangGraph-State%20Machine-22C55E?style=for-the-badge" alt="LangGraph" /></a>
     <a href="https://openrouter.ai/"><img src="https://img.shields.io/badge/OpenRouter-OpenAI%20Compatible-F97316?style=for-the-badge" alt="OpenRouter" /></a>
-    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Available-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Frontend-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" /></a>
 </p>
 
@@ -16,11 +17,11 @@
 
 ## ✨ Overview
 
-MASS is a Python-based multi-agent startup simulator that turns a single business idea into a structured founder-style debate. Instead of generating a one-shot answer, it runs the idea through specialized agents for CEO, Finance, Marketing, Product, Sales, and a Supervisor that checks whether the team has actually reached workable consensus.
+MASS is a multi-agent startup simulator that turns a single business idea into a structured founder-style debate. Instead of generating a one-shot answer, it runs the idea through specialized AI agents — CEO, Finance, Marketing, Product, Sales — and a Supervisor that checks whether the team has actually reached workable consensus.
 
-The result is a practical startup brief saved as JSON and plain text, covering the mission, problem statement, target customer, business model, financial snapshot, go-to-market plan, MVP scope, revenue targets, conflicts, and final verdict.
+The result is a practical startup brief covering the mission, problem statement, target customer, business model, financial snapshot, go-to-market plan, MVP scope, revenue targets, key conflicts, and a final verdict.
 
-This project is intentionally more than a prompt wrapper. It uses a LangGraph state machine, shared state, conflict tracking, structured extraction, and a FastAPI layer so the architecture feels closer to a real AI product workflow.
+The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-agent orchestration and a **Next.js frontend** with a terminal-inspired dark UI where users can submit ideas, watch agents debate in real time, and view structured results.
 
 ---
 
@@ -35,13 +36,19 @@ This project is intentionally more than a prompt wrapper. It uses a LangGraph st
 
 ### Structured output
 - Generates a readable business report.
-- Extracts a validated structured business plan.
+- Extracts a validated structured business plan (Pydantic models).
 - Persists outputs to the `outputs/` directory as JSON, TXT, and structured plan files.
 
-### Product-style interface
-- CLI entry point for quick simulation runs.
+### Web interface
+- Terminal-inspired dark landing page with agent council visualization.
+- Simulation form that collects startup idea + context (audience, market, revenue model, constraints).
+- Live polling UI that shows which agent is currently thinking.
+- Structured results displayed in styled cards — pricing tiers, financial snapshot, revenue targets, and more.
+
+### API
 - FastAPI endpoint for programmatic use.
-- Ready for a future frontend or workflow dashboard.
+- Background job processing with status polling.
+- CORS-enabled for frontend integration.
 
 ---
 
@@ -69,12 +76,13 @@ All agents read from and write to one shared state object. That keeps the workfl
 
 ## 📦 Key Features
 
-- **Role-separated agents:** each function has a distinct business lens.
+- **Role-separated agents:** each agent has a distinct business lens and reasoning persona.
 - **Consensus gating:** the supervisor decides whether CEO and Finance need another round.
 - **Conflict capture:** disagreements are recorded instead of being silently overwritten.
-- **Context-aware prompting:** user inputs like target audience, market, revenue model, and constraints influence outputs.
-- **Structured extraction:** the final report is converted into a typed business-plan object.
-- **API-ready design:** the FastAPI layer exposes the simulator for external clients.
+- **Context-aware prompting:** user inputs like target audience, market, revenue model, and constraints influence all agent outputs.
+- **Structured extraction:** the final report is converted into a typed business-plan object with retry-on-validation-failure.
+- **Web UI:** terminal-inspired Next.js frontend connected to the FastAPI backend.
+- **API-ready design:** the FastAPI layer exposes the simulator for any external client.
 
 ---
 
@@ -82,12 +90,13 @@ All agents read from and write to one shared state object. That keeps the workfl
 
 | Layer | Tool |
 |---|---|
-| Orchestration | LangGraph state machine |
-| LLM access | OpenRouter |
-| Backend | Python |
+| Agent orchestration | LangGraph state machine |
+| LLM access | OpenRouter (OpenAI-compatible) |
+| Backend | Python + FastAPI |
+| Frontend | Next.js 16, Tailwind CSS v4, TypeScript |
 | Shared state | TypedDict |
-| API | FastAPI |
-| Output | JSON, TXT, structured plan |
+| Structured output | Pydantic models |
+| Output formats | JSON, TXT, structured plan |
 
 ---
 
@@ -96,23 +105,35 @@ All agents read from and write to one shared state object. That keeps the workfl
 ```text
 MASS/
 ├── agents/
-│   ├── ceo_agent.py
-│   ├── finance_agent.py
-│   ├── marketing_agent.py
-│   ├── product_agent.py
-│   ├── sales_agent.py
-│   └── supervisor_agent.py
-├── api.py
-├── graph_orchestrator.py
-├── intake.py
-├── job_store.py
-├── main.py
-├── models.py
-├── report_generator.py
-├── save_report.py
-├── state.py
-├── structured_extractor.py
-├── outputs/
+│   ├── ceo_agent.py          # Steve Jobs + Elon Musk reasoning persona
+│   ├── finance_agent.py      # Naval Ravikant reasoning persona
+│   ├── marketing_agent.py    # Alex Hormozi reasoning persona
+│   ├── product_agent.py      # Brian Chesky (Airbnb) reasoning persona
+│   ├── sales_agent.py        # Jason Lemkin (SaaStr) reasoning persona
+│   └── supervisor_agent.py   # Consensus evaluator
+├── mass-frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── globals.css         # Tailwind v4 theme + design tokens
+│   │   │   ├── layout.tsx          # Root layout with fonts
+│   │   │   ├── page.tsx            # Landing page route
+│   │   │   ├── simulate/page.tsx   # Simulation form + results
+│   │   │   └── login/page.tsx      # Login placeholder
+│   │   ├── components/landing/     # 8 landing page components
+│   │   ├── lib/api.ts              # FastAPI client
+│   │   └── types/simulation.ts     # TypeScript types
+│   ├── package.json
+│   └── tsconfig.json
+├── api.py                    # FastAPI endpoints
+├── graph_orchestrator.py     # LangGraph state machine
+├── intake.py                 # User context collection
+├── job_store.py              # In-memory job tracking
+├── main.py                   # CLI entry point
+├── models.py                 # Pydantic business plan models
+├── report_generator.py       # Final report synthesis
+├── save_report.py            # JSON/TXT persistence
+├── state.py                  # Shared StartupState definition
+├── structured_extractor.py   # LLM → structured JSON extraction
 └── requirements.txt
 ```
 
@@ -122,9 +143,10 @@ MASS/
 
 ### Prerequisites
 - Python 3.10+
+- Node.js 18+
 - An OpenRouter API key
 
-### Setup
+### Backend setup
 
 ```bash
 git clone https://github.com/mayankmalik263/MASS.git
@@ -137,11 +159,31 @@ pip install -r requirements.txt
 
 copy .env.example .env
 # Add your OPENROUTER_API_KEY to .env
-
-python main.py
 ```
 
-### CLI flow
+### Frontend setup
+
+```bash
+cd mass-frontend
+npm install
+```
+
+### Running the app
+
+```bash
+# Terminal 1 — Start the API server
+uvicorn api:app --reload
+
+# Terminal 2 — Start the frontend
+cd mass-frontend
+npm run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### CLI mode
+
+If you prefer the command line:
 
 ```bash
 python main.py
@@ -153,14 +195,32 @@ Then enter your startup idea and optional context details when prompted.
 
 ## 🌐 API
 
-The project also includes a FastAPI service in [api.py](api.py).
+The FastAPI service in [api.py](api.py) exposes three endpoints:
 
-### Endpoints
-- `GET /` returns basic service status.
-- `POST /simulate` starts a background simulation.
-- `GET /simulate/{job_id}` fetches job status and results.
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Service health check |
+| `POST` | `/simulate` | Start a new simulation (returns `job_id`) |
+| `GET` | `/simulate/{job_id}` | Poll job status and fetch results |
 
-This makes it easy to connect the simulator to a frontend, dashboard, or internal tool.
+### Example request
+
+```bash
+curl -X POST http://localhost:8000/simulate \
+  -H "Content-Type: application/json" \
+  -d '{"idea": "AI-powered resume builder for college students", "market": "India", "revenue_model": "freemium"}'
+```
+
+### Example response
+
+```json
+{
+  "job_id": "abc-123",
+  "status": "pending"
+}
+```
+
+Poll `GET /simulate/abc-123` until status becomes `done`, then the response includes the full `result` object with `final_report`, `business_plan`, `conflicts`, `debate_rounds`, and `messages_count`.
 
 ---
 
@@ -174,19 +234,15 @@ That is what led me to build MASS. I wanted a system where five different AI age
 
 The best part is that I ended up building something I genuinely wanted for myself. At the same time, I got to go deeper into multi-agent architecture in a way that felt practical, not theoretical.
 
-Right now MASS is still a CLI app, but I see it becoming a proper product with a UI, API, and evaluation framework so anyone can use it to pressure-test startup ideas.
-
 ---
 
 ## 🔭 Future Improvements
 
-Here is what I am thinking of improving next:
-
-- I want to turn the CLI flow into a proper web UI so the debate feels interactive.
-- I want to add a stronger evaluation framework so I can measure output quality and consistency.
-- I want to tighten structured validation across agent outputs so the final plan is more reliable.
-- I want to build a clearer history layer so runs can be compared and reused later.
-- I want to make the simulator easier for other people to try without touching the code.
+- Add a stronger evaluation framework to measure output quality and consistency across runs.
+- Tighten structured validation across agent outputs so the final plan is more reliable.
+- Build a history layer so simulation runs can be compared, replayed, and reused.
+- Add authentication so users can save and revisit their simulation results.
+- Add real-time streaming so agent outputs appear as they are generated instead of polling.
 
 ---
 
