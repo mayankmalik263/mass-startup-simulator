@@ -90,6 +90,15 @@ MATH VERIFICATION (do this silently, fix before writing):
 6. COMPETITOR CHECK:
    - The report MUST name at least 2 real competitors in this space.
    - If CEO did not name any → add them yourself based on the market and idea.
+   - Only name competitors you are confident are real. Do not invent company names.
+
+7. GROWTH-TO-BREAKEVEN CROSS-CHECK:
+   - Monthly user growth rate = (Day 90 users - Day 30 users) ÷ 2
+   - Months to break-even from Day 90 = (break-even users - Day 90 users) ÷ monthly growth rate
+   - Total months to break-even = 3 + result above
+   - Final Verdict break-even claim MUST match this number (within ±1 month).
+   - If Final Verdict says "break-even in 7 months" but math shows 38 months → fix the verdict.
+   - If the growth rate is too slow to reach break-even in a reasonable time → say so honestly.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
