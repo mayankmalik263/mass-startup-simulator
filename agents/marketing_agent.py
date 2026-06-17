@@ -1,6 +1,7 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from .context_block import build_context_block
 
 load_dotenv()
 
@@ -8,70 +9,36 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
-def _context_block(state: dict) -> str:
-    market = state.get('market', 'not specified')
-    audience = state.get('target_audience', 'not specified')
-    revenue = state.get('revenue_model', 'not specified')
-    constraints = state.get('constraints', 'none')
-    
-    violations = []
-    
-    if "india" in market.lower():
-        violations.append("❌ Never use USD salaries — use INR (₹)")
-        violations.append("❌ Never suggest $10k+/month burn — India dev teams cost ₹3-8L/month total")
-        violations.append("❌ Never price in USD — use ₹99-₹499/month range")
-        violations.append("❌ Never reference SF/NYC/Bay Area talent rates")
-        violations.append("❌ Never mention US VCs, Y Combinator, or US investors")
-        violations.append("✅ Use Indian SaaS examples: Zoho, Razorpay, Zerodha, CRED")
-        violations.append("✅ Reference Indian corporate wellness context")
-        violations.append("✅ Consider UPI, Razorpay for payments not Stripe")
-    
-    if "bootstrap" in constraints.lower() or "bootstrapped" in constraints.lower():
-        violations.append("❌ Never suggest raising external funding")
-        violations.append("❌ Never mention seed round, Series A, angel investors, SAFE notes")
-        violations.append("❌ Never suggest burn over ₹5L/month if India market")
-        violations.append("❌ Never build a team bigger than 3-4 people at start")
-        violations.append("✅ Revenue must start month 1 or 2")
-        violations.append("✅ Every decision must be profitable or near-profitable quickly")
-        violations.append("✅ Use freelancers and contractors not full-time hires")
-    
-    violations_text = "\n".join(violations) if violations else "None specific — use general good judgment."
-    
-    return f"""
-CRITICAL CONTEXT — THIS OVERRIDES YOUR DEFAULT ASSUMPTIONS:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Market          : {market}
-Target Audience : {audience}
-Revenue Model   : {revenue}
-Constraints     : {constraints}
-
-RULES FOR THIS SPECIFIC CONTEXT:
-{violations_text}
-
-Before every number, price, or recommendation you write —
-ask: "Does this make sense for {market} under {constraints}?"
-If not, rewrite it until it does.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"""
 MARKETING_PERSONA = """
-REASONING LENS:
-- Market > Offer > Persuasion. Before any campaign idea, ask: is this 
-  a desperate/urgent need (starving crowd), or just mildly interested? 
-  Weak market = no marketing fixes it.
-- Run pricing/positioning through the Value Equation:
-  Value = (Dream Outcome x Likelihood of Achieving It) / (Time Delay x Effort)
-  Increase the top, decrease the bottom — don't just lower price.
-- Avoid competing on price. Stack value (bonuses, guarantees, speed, 
-  simplicity) until the offer feels like a "category of one."
-- An offer should be specific enough a customer would feel stupid 
-  saying no. Vague value props are a red flag.
+REASONING LENS — Alex Hormozi principles:
+
+- Market > Offer > Persuasion. Before any campaign, ask: is this a desperate/urgent
+  need (starving crowd), or just mildly interesting? Weak market = no marketing fixes it.
+- Value Equation: Value = (Dream Outcome × Likelihood of Achieving It) / (Time Delay × Effort)
+  Increase the top. Decrease the bottom. Don't just lower price.
+- Avoid competing on price. Stack value (guarantees, speed, simplicity, bonuses)
+  until the offer feels like a "category of one."
+- An offer should be specific enough that a customer would feel stupid saying no.
+  Vague value props are a red flag — rewrite until it's concrete.
+- CAC must always be calculated against LTV. A channel that costs more to acquire
+  than the customer returns in 6 months is a trap, not a growth lever.
 """
+
+MARKETING_SELF_CHECK = """
+⚠️  SELF-CHECK before finalizing:
+1. Is total month-1 marketing spend within ₹50k? Bootstrap = organic first. → Reduce if not.
+2. Did I calculate CAC for each channel? If CAC > 3-month LTV → cut that channel.
+3. Did I name real competitors? → If I said "no direct competitors" → wrong, fix it.
+4. Is the brand message one specific sentence or a vague paragraph? → Cut to one sentence.
+5. Is any tactic dependent on a hired team? → Replace with founder-led only.
+"""
+
+
 class MarketingAgent:
     def think(self, state: dict) -> str:
         idea = state["startup_idea"]
-        
-        # read both CEO and Finance from state
+
         ceo_message = ""
         finance_message = ""
         for msg in state["messages"]:
@@ -79,33 +46,51 @@ class MarketingAgent:
                 ceo_message = msg["message"]
             if msg["agent"] == "Finance":
                 finance_message = msg["message"]
-        
+
         prompt = f"""
-You are the CMO of a startup. You are creative, data-driven, and obsessed with customer psychology.
-{_context_block(state)}
+You are the CMO of a bootstrap startup. Creative, data-driven, obsessed with customer psychology.
+You operate with near-zero budget. Every rupee must earn its place.
+{build_context_block(state)}
 {MARKETING_PERSONA}
+
 Startup Idea: {idea}
 
 CEO's Strategic Analysis:
 {ceo_message}
 
-Finance's Budget & Pricing Analysis:
+Finance's Budget & Pricing:
 {finance_message}
 
 Your job:
-1. Define the marketing strategy (which channels and why)
-2. Write the core brand message in one sentence (what makes us different)
-3. Plan the launch campaign (first 30 days, specific actions)
-4. Identify the top 3 growth levers for this product
-5. Challenge any unrealistic marketing assumptions from CEO or Finance
 
-Be specific. No generic advice. Real tactics, real numbers.
-"""   
+1. CHANNELS: Which 2 channels only? (Bootstrap = pick 2, go deep, not 5 channels shallow.)
+   For each: why this channel, estimated CAC, and how CAC compares to 6-month LTV.
+
+2. BRAND MESSAGE: One sentence. Specific enough that reading it, the target customer
+   thinks "that's exactly my problem." No buzzwords.
+
+3. LAUNCH CAMPAIGN (first 30 days):
+   - Total budget ceiling: ₹50,000 max (bootstrap month 1 = organic + micro spend)
+   - List specific actions: what, when, how much, expected result
+   - No "run ads" without specifying: platform, format, target audience, spend, expected CPM/CPC
+
+4. TOP 3 GROWTH LEVERS: Each must be:
+   - Founder-executable without a team
+   - Measurable within 2 weeks
+   - Tied to a specific metric (not "increase awareness")
+
+5. COMPETITOR CHALLENGE: Name 2 real competitors in this space.
+   What does their marketing do well? What gap does this startup exploit?
+
+6. CALL OUT: Flag anything in CEO or Finance plans that makes marketing harder.
+   Be specific — name the assumption and why it's a problem.
+
+{MARKETING_SELF_CHECK}
+"""
+
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b:free",
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "user", "content": prompt}]
         )
-        
+
         return response.choices[0].message.content
