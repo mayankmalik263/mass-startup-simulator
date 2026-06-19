@@ -1,9 +1,14 @@
+import asyncio
+import json
+
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from job_store import create_job, update_job, get_job, JobStatus
 from graph_orchestrator import run
+import event_bus
 
 app = FastAPI(title="MASS API", description="Multi-Agent Startup Simulator")
 
@@ -35,7 +40,7 @@ def run_simulation(job_id: str, req: SimulateRequest):
             "constraints": req.constraints
         }
 
-        final_state = run(req.idea, context)
+        final_state = run(req.idea, context, job_id=job_id)
 
         result = {
             "final_report": final_state.get("final_report", ""),
@@ -48,7 +53,13 @@ def run_simulation(job_id: str, req: SimulateRequest):
         update_job(job_id, status=JobStatus.DONE, result=result)
 
     except Exception as e:
+        event_bus.publish(job_id, {"type": "job_error", "error": str(e)})
         update_job(job_id, status=JobStatus.ERROR, error=str(e))
+    finally:
+        # Give SSE a moment to flush the last event, then clean up
+        import time
+        time.sleep(1)
+        event_bus.cleanup(job_id)
 
 
 @app.get("/")
@@ -78,3 +89,49 @@ def get_simulation(job_id: str):
         response["error"] = job["error"]
 
     return response
+
+
+@app.get("/simulate/{job_id}/stream")
+async def stream_simulation(job_id: str):
+    """
+    SSE endpoint — streams real-time agent activity events.
+
+    Event format:  data: {"type": "agent_start", "agent": "CEO", ...}\n\n
+    Terminal events: job_done, job_error (stream closes after these).
+    """
+    job = get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    loop = asyncio.get_event_loop()
+    queue = event_bus.create_channel(job_id, loop)
+
+    async def event_generator():
+        try:
+            while True:
+                # Wait for next event (with timeout to detect dead jobs)
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=120)
+                except asyncio.TimeoutError:
+                    # Send keepalive comment
+                    yield ": keepalive\n\n"
+                    continue
+
+                data = json.dumps(event)
+                yield f"data: {data}\n\n"
+
+                # Terminal events — close the stream
+                if event.get("type") in ("job_done", "job_error"):
+                    break
+        except asyncio.CancelledError:
+            pass
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
