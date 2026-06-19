@@ -1,4 +1,4 @@
-import type { SimulateRequest, SimulationJob } from '@/types/simulation';
+import type { SimulateRequest, SimulationJob, AgentEvent } from '@/types/simulation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -37,4 +37,36 @@ export async function getSimulationStatus(jobId: string): Promise<SimulationJob>
   }
 
   return res.json();
+}
+
+/**
+ * GET /simulate/{job_id}/stream — opens an SSE connection for real-time events.
+ * Returns a cleanup function to close the connection.
+ */
+export function streamSimulation(
+  jobId: string,
+  onEvent: (event: AgentEvent) => void,
+  onError?: (error: Event) => void
+): () => void {
+  const url = `${API_URL}/simulate/${jobId}/stream`;
+  const eventSource = new EventSource(url);
+
+  eventSource.onmessage = (e) => {
+    try {
+      const event: AgentEvent = JSON.parse(e.data);
+      onEvent(event);
+    } catch {
+      console.warn('Failed to parse SSE event:', e.data);
+    }
+  };
+
+  eventSource.onerror = (e) => {
+    if (onError) onError(e);
+    eventSource.close();
+  };
+
+  // Return cleanup function
+  return () => {
+    eventSource.close();
+  };
 }

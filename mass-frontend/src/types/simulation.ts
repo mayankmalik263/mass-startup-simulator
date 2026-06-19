@@ -66,3 +66,29 @@ export interface SimulationJob {
   result?: SimulationResult;
   error?: string;
 }
+
+/* ─── SSE agent events ────────────────────────────── */
+
+export type AgentEventType =
+  | 'agent_start'
+  | 'agent_done'
+  | 'supervisor_result'
+  | 'debate_loop'
+  | 'job_done'
+  | 'job_error';
+
+export interface AgentEvent {
+  type: AgentEventType;
+  agent?: string;
+  round?: number;
+  summary?: string;
+  // supervisor-specific
+  agreed?: boolean;
+  reason?: string;
+  conflicts?: string[];
+  decisions?: string[];
+  forced?: boolean;
+  // error
+  error?: string;
+  timestamp?: number;
+}
