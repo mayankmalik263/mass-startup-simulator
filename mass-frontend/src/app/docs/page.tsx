@@ -104,7 +104,7 @@ export default function DocsPage() {
           </Link>
           <div className="flex items-center gap-md">
             <a
-              href="https://github.com/mayankmalik263/MASS"
+              href="https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-"
               target="_blank"
               rel="noopener noreferrer"
               className="font-label-mono text-on-surface-variant hover:text-primary transition-colors text-xs"
@@ -371,7 +371,7 @@ export default function DocsPage() {
               <div>
                 <h3 className="font-label-mono text-on-surface text-sm mb-sm">Backend Setup</h3>
                 <pre className="bg-black border border-outline-variant p-md font-mono text-[11px] text-on-surface-variant overflow-x-auto">
-{`git clone https://github.com/mayankmalik263/MASS.git
+{`git clone https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-.git
 cd MASS
 
 python -m venv venv
@@ -449,7 +449,7 @@ npm run dev`}
                     Terms of Service
                   </Link>{' '}
                   or the{' '}
-                  <a href="https://github.com/mayankmalik263/MASS/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  <a href="https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                     LICENSE file on GitHub
                   </a>.
                 </p>
