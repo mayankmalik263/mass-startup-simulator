@@ -10,12 +10,16 @@ from job_store import create_job, update_job, get_job, JobStatus
 from graph_orchestrator import run
 import event_bus
 
+import os
+
 app = FastAPI(title="MASS API", description="Multi-Agent Startup Simulator")
 
-# allow frontend (Next.js, etc.) to call this API later
+# CORS — reads allowed origins from ALLOWED_ORIGINS env var
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
