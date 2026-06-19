@@ -11,7 +11,14 @@
     <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Frontend-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" /></a>
+    <a href="https://mass-multi-agent-startup-simulator.vercel.app/"><img src="https://img.shields.io/badge/Live_Demo-Play_Now-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
 </p>
+
+---
+
+## 🚀 Live Demo
+
+Try the simulator right now at: **[mass-multi-agent-startup-simulator.vercel.app](https://mass-multi-agent-startup-simulator.vercel.app/)**
 
 ---
 
@@ -45,6 +52,8 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 - **Real-time SSE streaming** — the UI syncs with the backend so the agent grid highlights only the agent that's actually running.
 - **Live activity feed** — shows each agent's summary, supervisor consensus verdicts (agreed / not agreed / forced after 3 rounds), debate loop transitions, and round numbers.
 - Structured results displayed in styled cards — pricing tiers, financial snapshot, revenue targets, and more.
+- **Comprehensive Documentation & Legal Pages** — included `/docs`, `/privacy`, and `/terms` directly integrated into the app.
+- **Vercel Analytics** integrated for privacy-friendly tracking.
 
 ### API
 - FastAPI endpoint for programmatic use.
@@ -153,7 +162,7 @@ MASS/
 ### Backend setup
 
 ```bash
-git clone https://github.com/mayankmalik263/MASS.git
+git clone https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-.git
 cd MASS
 
 python -m venv venv
