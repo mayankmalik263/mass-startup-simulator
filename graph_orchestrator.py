@@ -9,11 +9,37 @@ from agents.supervisor_agent import SupervisorAgent
 from report_generator import generate_report
 from save_report import save_state
 from structured_extractor import extract_structured_plan
+import event_bus
+
+# ── helper ──────────────────────────────────────────────
+
+def _summarize(text: str, max_len: int = 150) -> str:
+    """Extract a short summary from an agent's response for SSE display."""
+    if not text:
+        return ""
+    # Take first meaningful line that isn't a heading/header
+    lines = text.strip().split("\n")
+    summary = ""
+    for line in lines:
+        clean = line.strip().strip("#").strip("*").strip("-").strip()
+        if len(clean) > 20:
+            summary = clean
+            break
+    if not summary:
+        summary = text.strip()
+    if len(summary) > max_len:
+        summary = summary[:max_len].rsplit(" ", 1)[0] + "..."
+    return summary
 
 # ── node functions ──────────────────────────────────────
 
 def ceo_node(state: StartupState) -> StartupState:
-    print(f"\n🤖 CEO Agent thinking... (round {state['iteration'] + 1})\n")
+    job_id = state.get("job_id", "")
+    round_num = state["iteration"] + 1
+    print(f"\n🤖 CEO Agent thinking... (round {round_num})\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "CEO", "round": round_num})
+
     agent = CEOAgent()
     response = agent.think(state)
     
@@ -22,10 +48,23 @@ def ceo_node(state: StartupState) -> StartupState:
         "round": state["iteration"],
         "message": response
     })
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "CEO",
+        "round": round_num,
+        "summary": _summarize(response)
+    })
+
     return state
 
 def finance_node(state: StartupState) -> StartupState:
-    print(f"💰 Finance Agent thinking... (round {state['iteration'] + 1})\n")
+    job_id = state.get("job_id", "")
+    round_num = state["iteration"] + 1
+    print(f"💰 Finance Agent thinking... (round {round_num})\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Finance", "round": round_num})
+
     agent = FinanceAgent()
     response = agent.think(state)
     
@@ -34,10 +73,22 @@ def finance_node(state: StartupState) -> StartupState:
         "round": state["iteration"],
         "message": response
     })
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "Finance",
+        "round": round_num,
+        "summary": _summarize(response)
+    })
+
     return state
 
 def marketing_node(state: StartupState) -> StartupState:
+    job_id = state.get("job_id", "")
     print("📣 Marketing Agent thinking...\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Marketing", "round": state["iteration"]})
+
     agent = MarketingAgent()
     response = agent.think(state)
     state["messages"].append({
@@ -45,10 +96,22 @@ def marketing_node(state: StartupState) -> StartupState:
         "round": state["iteration"],
         "message": response
     })
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "Marketing",
+        "round": state["iteration"],
+        "summary": _summarize(response)
+    })
+
     return state
 
 def product_node(state: StartupState) -> StartupState:
+    job_id = state.get("job_id", "")
     print("🛠️ Product Agent thinking...\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Product", "round": state["iteration"]})
+
     agent = ProductAgent()
     response = agent.think(state)
     state["messages"].append({
@@ -56,10 +119,22 @@ def product_node(state: StartupState) -> StartupState:
         "round": state["iteration"],
         "message": response
     })
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "Product",
+        "round": state["iteration"],
+        "summary": _summarize(response)
+    })
+
     return state
 
 def sales_node(state: StartupState) -> StartupState:
+    job_id = state.get("job_id", "")
     print("🤝 Sales Agent thinking...\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Sales", "round": state["iteration"]})
+
     agent = SalesAgent()
     response = agent.think(state)
     state["messages"].append({
@@ -67,10 +142,23 @@ def sales_node(state: StartupState) -> StartupState:
         "round": state["iteration"],
         "message": response
     })
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "Sales",
+        "round": state["iteration"],
+        "summary": _summarize(response)
+    })
+
     return state
 
 def supervisor_node(state: StartupState) -> StartupState:
+    job_id = state.get("job_id", "")
+    round_num = state["iteration"] + 1
     print("🎯 Supervisor checking consensus...\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Supervisor", "round": round_num})
+
     agent = SupervisorAgent()
     result = agent.evaluate(state)
     
@@ -83,11 +171,31 @@ def supervisor_node(state: StartupState) -> StartupState:
     
     if result.get("decisions"):
         state["decisions"].extend(result["decisions"])
-    
+
+    # Determine if consensus is being forced
+    forced = False
+    if not result["agreed"] and state["iteration"] >= state["max_iterations"]:
+        forced = True
+
+    event_bus.publish(job_id, {
+        "type": "supervisor_result",
+        "agent": "Supervisor",
+        "round": round_num,
+        "agreed": result["agreed"],
+        "reason": result.get("reason", ""),
+        "conflicts": result.get("conflicts", []),
+        "decisions": result.get("decisions", []),
+        "forced": forced
+    })
+
     return state
 
 def report_node(state: StartupState) -> StartupState:
+    job_id = state.get("job_id", "")
     print("📊 Generating final report...\n")
+
+    event_bus.publish(job_id, {"type": "agent_start", "agent": "Report", "round": state["iteration"]})
+
     report = generate_report(state)
     state["final_report"] = report
     
@@ -98,7 +206,14 @@ def report_node(state: StartupState) -> StartupState:
     
     if business_plan:
         state["business_plan"] = business_plan.model_dump()
-    
+
+    event_bus.publish(job_id, {
+        "type": "agent_done",
+        "agent": "Report",
+        "round": state["iteration"],
+        "summary": "Final report generated and business plan extracted."
+    })
+
     return state
 
 # ── routing functions ────────────────────────────────────
@@ -110,6 +225,8 @@ def should_debate_more(state: StartupState) -> str:
     - if not agreed AND rounds left → loop back to CEO
     - if not agreed AND max rounds hit → force move on
     """
+    job_id = state.get("job_id", "")
+
     if state["ceo_finance_agreed"]:
         print("✅ CEO + Finance agreed. Moving to Marketing.\n")
         return "agreed"
@@ -119,6 +236,13 @@ def should_debate_more(state: StartupState) -> str:
         return "agreed"
     
     print(f"🔄 No consensus yet. Round {state['iteration'] + 1} starting.\n")
+
+    event_bus.publish(job_id, {
+        "type": "debate_loop",
+        "round": state["iteration"] + 1,
+        "reason": "CEO and Finance have not reached consensus. Starting another round."
+    })
+
     return "debate_more"
 
 # ── build graph ──────────────────────────────────────────
@@ -162,7 +286,7 @@ def build_graph():
 
 # ── run ──────────────────────────────────────────────────
 
-def run(idea: str, context: dict = None):
+def run(idea: str, context: dict = None, job_id: str = ""):
     if context is None:
         context = {}
     
@@ -171,7 +295,8 @@ def run(idea: str, context: dict = None):
         target_audience=context.get("target_audience", ""),
         market=context.get("market", ""),
         revenue_model=context.get("revenue_model", ""),
-        constraints=context.get("constraints", "")
+        constraints=context.get("constraints", ""),
+        job_id=job_id
     )
     print("\n🔍 DEBUG STATE:", {
     "market": state.get("market"),
@@ -183,6 +308,9 @@ def run(idea: str, context: dict = None):
     app = build_graph()
     
     final_state = app.invoke(state)
+
+    # Emit job_done event
+    event_bus.publish(job_id, {"type": "job_done"})
     
     # print all outputs
     printed = set()
