@@ -7,7 +7,7 @@ export default function Footer() {
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Docs', href: '/docs' },
-    { label: 'Github', href: 'https://github.com/mayankmalik263/MASS', external: true },
+    { label: 'Github', href: 'https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-', external: true },
     { label: '𝕏', href: 'https://x.com/systemslearner', external: true },
   ];
 
