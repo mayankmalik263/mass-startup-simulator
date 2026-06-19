@@ -170,7 +170,7 @@ export default function TermsPage() {
                 𝕏 @systemslearner
               </a>{' '}
               or open an issue on{' '}
-              <a href="https://github.com/mayankmalik263/MASS/issues" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              <a href="https://github.com/mayankmalik263/Mass-Multi-Agent-STARTUP-Simulator-/issues" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                 GitHub
               </a>.
             </p>
