@@ -29,14 +29,12 @@ export default function Navigation() {
           >
             Council
           </button>
-          <a
+          <Link
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
-            href="https://github.com/mayankmalik263/MASS"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/docs"
           >
             Docs
-          </a>
+          </Link>
           <button
             onClick={() => scrollTo('stats')}
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors bg-transparent"
