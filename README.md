@@ -21,7 +21,7 @@ MASS is a multi-agent startup simulator that turns a single business idea into a
 
 The result is a practical startup brief covering the mission, problem statement, target customer, business model, financial snapshot, go-to-market plan, MVP scope, revenue targets, key conflicts, and a final verdict.
 
-The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-agent orchestration and a **Next.js frontend** with a terminal-inspired dark UI where users can submit ideas, watch agents debate in real time, and view structured results.
+The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-agent orchestration and a **Next.js frontend** with a terminal-inspired dark UI where users can submit ideas, watch agents debate in real time via **Server-Sent Events (SSE)**, and view structured results.
 
 ---
 
@@ -42,12 +42,14 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 ### Web interface
 - Terminal-inspired dark landing page with agent council visualization.
 - Simulation form that collects startup idea + context (audience, market, revenue model, constraints).
-- Live polling UI that shows which agent is currently thinking.
+- **Real-time SSE streaming** — the UI syncs with the backend so the agent grid highlights only the agent that's actually running.
+- **Live activity feed** — shows each agent's summary, supervisor consensus verdicts (agreed / not agreed / forced after 3 rounds), debate loop transitions, and round numbers.
 - Structured results displayed in styled cards — pricing tiers, financial snapshot, revenue targets, and more.
 
 ### API
 - FastAPI endpoint for programmatic use.
 - Background job processing with status polling.
+- **SSE streaming endpoint** for real-time agent activity events.
 - CORS-enabled for frontend integration.
 
 ---
@@ -93,6 +95,7 @@ All agents read from and write to one shared state object. That keeps the workfl
 | Agent orchestration | LangGraph state machine |
 | LLM access | OpenRouter (OpenAI-compatible) |
 | Backend | Python + FastAPI |
+| Real-time streaming | Server-Sent Events (SSE) |
 | Frontend | Next.js 16, Tailwind CSS v4, TypeScript |
 | Shared state | TypedDict |
 | Structured output | Pydantic models |
@@ -117,15 +120,16 @@ MASS/
 │   │   │   ├── globals.css         # Tailwind v4 theme + design tokens
 │   │   │   ├── layout.tsx          # Root layout with fonts
 │   │   │   ├── page.tsx            # Landing page route
-│   │   │   ├── simulate/page.tsx   # Simulation form + results
+│   │   │   ├── simulate/page.tsx   # Simulation form + live SSE results
 │   │   │   └── login/page.tsx      # Login placeholder
 │   │   ├── components/landing/     # 8 landing page components
-│   │   ├── lib/api.ts              # FastAPI client
-│   │   └── types/simulation.ts     # TypeScript types
+│   │   ├── lib/api.ts              # FastAPI + SSE stream client
+│   │   └── types/simulation.ts     # TypeScript types + SSE event types
 │   ├── package.json
 │   └── tsconfig.json
-├── api.py                    # FastAPI endpoints
-├── graph_orchestrator.py     # LangGraph state machine
+├── api.py                    # FastAPI endpoints + SSE streaming
+├── event_bus.py              # In-memory pub/sub for real-time events
+├── graph_orchestrator.py     # LangGraph state machine + event emission
 ├── intake.py                 # User context collection
 ├── job_store.py              # In-memory job tracking
 ├── main.py                   # CLI entry point
@@ -195,13 +199,14 @@ Then enter your startup idea and optional context details when prompted.
 
 ## 🌐 API
 
-The FastAPI service in [api.py](api.py) exposes three endpoints:
+The FastAPI service in [api.py](api.py) exposes four endpoints:
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/` | Service health check |
 | `POST` | `/simulate` | Start a new simulation (returns `job_id`) |
 | `GET` | `/simulate/{job_id}` | Poll job status and fetch results |
+| `GET` | `/simulate/{job_id}/stream` | SSE stream of real-time agent activity events |
 
 ### Example request
 
@@ -242,7 +247,7 @@ The best part is that I ended up building something I genuinely wanted for mysel
 - Tighten structured validation across agent outputs so the final plan is more reliable.
 - Build a history layer so simulation runs can be compared, replayed, and reused.
 - Add authentication so users can save and revisit their simulation results.
-- Add real-time streaming so agent outputs appear as they are generated instead of polling.
+- ~~Add real-time streaming so agent outputs appear as they are generated instead of polling.~~ ✅ Done — SSE streaming implemented.
 
 ---
 
