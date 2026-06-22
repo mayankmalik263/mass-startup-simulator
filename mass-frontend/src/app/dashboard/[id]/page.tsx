@@ -48,8 +48,8 @@ export default function HistoryDetailPage() {
         ) : error ? (
           <div className="border border-error bg-error/5 p-xl text-center">
             <p className="font-body-lg text-error mb-lg">{error}</p>
-            <Link href="/history" className="bg-transparent border border-outline text-on-surface font-label-mono px-xl py-sm rounded hover:border-primary transition-colors">
-              Return to History
+            <Link href="/dashboard" className="bg-transparent border border-outline text-on-surface font-label-mono px-xl py-sm rounded hover:border-primary transition-colors">
+              Return to Dashboard
             </Link>
           </div>
         ) : simulation ? (
