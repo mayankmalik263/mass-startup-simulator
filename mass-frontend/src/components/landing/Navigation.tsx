@@ -37,38 +37,24 @@ export default function Navigation() {
           MASS
         </Link>
         <div className="hidden md:flex items-center gap-xl">
-          <button
-            onClick={() => scrollTo('hero')}
+          <Link
+            href="/#hero"
             className="font-body-lg text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors bg-transparent"
           >
             Simulator
-          </button>
-          <button
-            onClick={() => scrollTo('council')}
+          </Link>
+          <Link
+            href="/#council"
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors bg-transparent"
           >
             Council
-          </button>
-          {session && (
-            <Link
-              className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
-              href="/dashboard"
-            >
-              Dashboard
-            </Link>
-          )}
+          </Link>
           <Link
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
             href="/docs"
           >
             Docs
           </Link>
-          <button
-            onClick={() => scrollTo('stats')}
-            className="font-body-lg text-on-surface-variant hover:text-primary transition-colors bg-transparent"
-          >
-            Pricing
-          </button>
         </div>
         <div className="flex items-center gap-md">
           {session ? (
@@ -90,19 +76,21 @@ export default function Navigation() {
               </button>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
-            >
-              Login
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
+              >
+                Login
+              </Link>
+              <Link
+                href="/simulate"
+                className="bg-primary text-on-primary px-lg py-sm rounded border border-primary-container font-label-mono hover:brightness-110 transition-all"
+              >
+                Start Free
+              </Link>
+            </>
           )}
-          <Link
-            href="/simulate"
-            className="bg-primary text-on-primary px-lg py-sm rounded border border-primary-container font-label-mono hover:brightness-110 transition-all"
-          >
-            {session ? 'Launch Terminal' : 'Start Free Demo'}
-          </Link>
         </div>
       </nav>
     </header>
