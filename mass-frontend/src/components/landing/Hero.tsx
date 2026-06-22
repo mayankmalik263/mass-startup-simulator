@@ -64,7 +64,7 @@ export default function Hero() {
             onClick={scrollToProcess}
             className="w-full md:w-auto bg-transparent border border-outline text-on-surface font-label-mono px-xl py-md rounded hover:bg-surface-container-low transition-all"
           >
-            Watch Demo
+            How It Works
           </button>
         </div>
       </div>
