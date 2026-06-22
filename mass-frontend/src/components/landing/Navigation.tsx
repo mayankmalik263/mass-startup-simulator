@@ -3,11 +3,24 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navigation() {
   const [session, setSession] = useState<any>(null);
+  const [activeHash, setActiveHash] = useState('');
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setActiveHash(window.location.hash || '#hero');
+    
+    // Listen to hash changes in case of browser back/forward or manual URL edits
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash || '#hero');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [pathname]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -23,9 +36,9 @@ export default function Navigation() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const isSimulatorActive = pathname === '/' && (activeHash === '#hero' || activeHash === '');
+  const isCouncilActive = pathname === '/' && activeHash === '#council';
+  const isDocsActive = pathname === '/docs';
 
   return (
     <header className="fixed top-0 w-full z-50 bg-background border-b border-outline-variant">
@@ -39,19 +52,33 @@ export default function Navigation() {
         <div className="hidden md:flex items-center gap-xl">
           <Link
             href="/#hero"
-            className="font-label-mono text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors bg-transparent"
+            onClick={() => setActiveHash('#hero')}
+            className={`font-label-mono pb-1 transition-colors bg-transparent border-b-2 ${
+              isSimulatorActive
+                ? 'text-primary font-bold border-primary'
+                : 'text-on-surface-variant border-transparent hover:text-primary'
+            }`}
           >
             Simulator
           </Link>
           <Link
             href="/#council"
-            className="font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-primary transition-colors bg-transparent"
+            onClick={() => setActiveHash('#council')}
+            className={`font-label-mono pb-1 transition-colors bg-transparent border-b-2 ${
+              isCouncilActive
+                ? 'text-primary font-bold border-primary'
+                : 'text-on-surface-variant border-transparent hover:text-primary'
+            }`}
           >
             Council
           </Link>
           <Link
-            className="font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-primary transition-colors"
             href="/docs"
+            className={`font-label-mono pb-1 transition-colors bg-transparent border-b-2 ${
+              isDocsActive
+                ? 'text-primary font-bold border-primary'
+                : 'text-on-surface-variant border-transparent hover:text-primary'
+            }`}
           >
             Docs
           </Link>
