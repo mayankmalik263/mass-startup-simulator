@@ -11,6 +11,7 @@ from graph_orchestrator import run
 import event_bus
 
 import os
+from supabase_client import get_supabase
 
 app = FastAPI(title="MASS API", description="Multi-Agent Startup Simulator")
 
@@ -139,3 +140,25 @@ async def stream_simulation(job_id: str):
             "X-Accel-Buffering": "no",
         },
     )
+
+@app.get("/simulations")
+def list_simulations():
+    try:
+        supabase = get_supabase()
+        response = supabase.table("simulations").select("id, job_id, idea, created_at").order("created_at", desc=True).execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/simulations/{id}")
+def get_simulation_by_id(id: str):
+    try:
+        supabase = get_supabase()
+        response = supabase.table("simulations").select("*").eq("id", id).execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Simulation not found")
+        return response.data[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

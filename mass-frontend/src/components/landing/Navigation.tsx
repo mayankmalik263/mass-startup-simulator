@@ -31,6 +31,12 @@ export default function Navigation() {
           </button>
           <Link
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
+            href="/history"
+          >
+            History
+          </Link>
+          <Link
+            className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
             href="/docs"
           >
             Docs

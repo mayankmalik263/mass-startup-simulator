@@ -70,3 +70,30 @@ export function streamSimulation(
     eventSource.close();
   };
 }
+
+/**
+ * GET /simulations — fetch past simulation history.
+ */
+export async function getSimulations(): Promise<any[]> {
+  const res = await fetch(`${API_URL}/simulations`, { cache: 'no-store' });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to fetch simulations: ${err}`);
+  }
+  return res.json();
+}
+
+/**
+ * GET /simulations/{id} — fetch a specific past simulation.
+ */
+export async function getSimulationById(id: string): Promise<any> {
+  const res = await fetch(`${API_URL}/simulations/${id}`, { cache: 'no-store' });
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error('Simulation not found');
+    }
+    const err = await res.text();
+    throw new Error(`Failed to fetch simulation: ${err}`);
+  }
+  return res.json();
+}
