@@ -92,8 +92,9 @@ All agents read from and write to one shared state object. That keeps the workfl
 - **Conflict capture:** disagreements are recorded instead of being silently overwritten.
 - **Context-aware prompting:** user inputs like target audience, market, revenue model, and constraints influence all agent outputs.
 - **Structured extraction:** the final report is converted into a typed business-plan object with retry-on-validation-failure.
-- **Web UI:** terminal-inspired Next.js frontend connected to the FastAPI backend.
-- **API-ready design:** the FastAPI layer exposes the simulator for any external client.
+- **Web UI:** Terminal-inspired Next.js frontend with live streaming, a one-time free demo flow, and an authenticated modern dashboard.
+- **SaaS Ready:** Full Supabase Authentication, Row Level Security (RLS) data isolation, and dynamic paywalls.
+- **API-ready design:** The FastAPI layer exposes the simulator for any external client.
 
 ---
 
@@ -254,8 +255,8 @@ The best part is that I ended up building something I genuinely wanted for mysel
 
 - Add a stronger evaluation framework to measure output quality and consistency across runs.
 - ~~Tighten structured validation across agent outputs so the final plan is more reliable.~~ ✅ Done — Added strict validation and retry logic (June 22, 2026).
-- ~~Build a history layer so simulation runs can be compared, replayed, and reused.~~ ✅ Done — Integrated Supabase database and Next.js History dashboard (June 22, 2026).
-- Add authentication so users can save and revisit their simulation results.
+- ~~Build a history layer so simulation runs can be compared, replayed, and reused.~~ ✅ Done — Integrated Supabase database (June 22, 2026).
+- ~~Add authentication so users can save and revisit their simulation results.~~ ✅ Done — Added Supabase Auth, Row Level Security, Free Demo Mode, and Dashboard UI (June 22, 2026).
 - ~~Add real-time streaming so agent outputs appear as they are generated instead of polling.~~ ✅ Done — SSE streaming implemented (June 19, 2026).
 
 ---
