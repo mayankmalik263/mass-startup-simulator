@@ -254,7 +254,7 @@ The best part is that I ended up building something I genuinely wanted for mysel
 
 - Add a stronger evaluation framework to measure output quality and consistency across runs.
 - ~~Tighten structured validation across agent outputs so the final plan is more reliable.~~ ✅ Done — Added strict validation and retry logic (June 22, 2026).
-- Build a history layer so simulation runs can be compared, replayed, and reused.
+- ~~Build a history layer so simulation runs can be compared, replayed, and reused.~~ ✅ Done — Integrated Supabase database and Next.js History dashboard (June 22, 2026).
 - Add authentication so users can save and revisit their simulation results.
 - ~~Add real-time streaming so agent outputs appear as they are generated instead of polling.~~ ✅ Done — SSE streaming implemented (June 19, 2026).
 
