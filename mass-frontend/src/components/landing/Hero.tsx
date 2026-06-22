@@ -84,13 +84,16 @@ export default function Hero() {
         </div>
 
         {/* Desktop Council Visualization */}
-        <div className="hidden md:flex relative h-[400px] items-center justify-center">
+        <div className="hidden md:flex relative h-[480px] items-center justify-center">
           {/* Central Node */}
           <div className="z-20 flex flex-col items-center animate-float" style={{ animationDelay: '0s' }}>
             <div className="w-24 h-24 bg-black border-2 border-primary flex items-center justify-center glow-border rounded-xl">
               <span className="material-symbols-outlined text-primary text-[40px] animate-pulse">fact_check</span>
             </div>
-            <span className="font-label-mono text-[10px] text-primary/80 mt-sm bg-black/80 px-sm py-[2px] rounded border border-outline-variant">Consensus Check</span>
+            <div className="flex flex-col items-center mt-sm">
+              <span className="font-label-mono text-xs bg-surface-container-highest px-sm py-[2px] rounded border border-outline-variant z-20 shadow-md">SUPERVISOR</span>
+              <span className="font-label-mono text-[9px] text-primary/80 mt-xs">Strict Evaluator</span>
+            </div>
           </div>
 
           {/* CEO */}
@@ -106,7 +109,7 @@ export default function Hero() {
           </div>
 
           {/* CFO */}
-          <div className="absolute top-1/4 left-0 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.8s' }}>
+          <div className="absolute top-[10%] left-0 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.8s' }}>
             <div className="w-16 h-16 bg-surface-container-highest border border-outline flex items-center justify-center rounded-xl transition-all duration-300 group-hover/node:scale-110 group-hover/node:border-primary group-hover/node:shadow-[0_0_15px_rgba(139,92,246,0.4)] relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/node:opacity-100 transition-opacity" />
               <span className="material-symbols-outlined text-[28px] text-on-surface group-hover/node:text-primary group-hover/node:scale-110 transition-all duration-300 relative z-10">account_balance</span>
@@ -118,7 +121,7 @@ export default function Hero() {
           </div>
 
           {/* CMO */}
-          <div className="absolute top-1/4 right-0 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.4s' }}>
+          <div className="absolute top-[10%] right-0 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.4s' }}>
             <div className="w-16 h-16 bg-surface-container-highest border border-outline flex items-center justify-center rounded-xl transition-all duration-300 group-hover/node:scale-110 group-hover/node:border-primary group-hover/node:shadow-[0_0_15px_rgba(139,92,246,0.4)] relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/node:opacity-100 transition-opacity" />
               <span className="material-symbols-outlined text-[28px] text-on-surface group-hover/node:text-primary group-hover/node:scale-110 transition-all duration-300 relative z-10">campaign</span>
@@ -130,7 +133,7 @@ export default function Hero() {
           </div>
 
           {/* CPO */}
-          <div className="absolute bottom-1/4 left-12 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.6s' }}>
+          <div className="absolute bottom-[10%] left-12 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '0.6s' }}>
             <div className="w-16 h-16 bg-surface-container-highest border border-outline flex items-center justify-center rounded-xl transition-all duration-300 group-hover/node:scale-110 group-hover/node:border-primary group-hover/node:shadow-[0_0_15px_rgba(139,92,246,0.4)] relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/node:opacity-100 transition-opacity" />
               <span className="material-symbols-outlined text-[28px] text-on-surface group-hover/node:text-primary group-hover/node:scale-110 transition-all duration-300 relative z-10">architecture</span>
@@ -142,7 +145,7 @@ export default function Hero() {
           </div>
 
           {/* CRO */}
-          <div className="absolute bottom-1/4 right-12 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '1.0s' }}>
+          <div className="absolute bottom-[10%] right-12 flex flex-col items-center group/node cursor-default animate-float" style={{ animationDelay: '1.0s' }}>
             <div className="w-16 h-16 bg-surface-container-highest border border-outline flex items-center justify-center rounded-xl transition-all duration-300 group-hover/node:scale-110 group-hover/node:border-primary group-hover/node:shadow-[0_0_15px_rgba(139,92,246,0.4)] relative overflow-hidden">
               <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover/node:opacity-100 transition-opacity" />
               <span className="material-symbols-outlined text-[28px] text-on-surface group-hover/node:text-primary group-hover/node:scale-110 transition-all duration-300 relative z-10">handshake</span>
@@ -156,13 +159,13 @@ export default function Hero() {
           {/* SVG Connections */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
-            viewBox="0 0 1000 400"
+            viewBox="0 0 1000 480"
           >
-            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="500" x2="500" y1="20" y2="150" />
-            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="65" x2="450" y1="120" y2="180" />
-            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="935" x2="550" y1="120" y2="180" />
-            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="150" x2="460" y1="280" y2="230" />
-            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="850" x2="540" y1="280" y2="230" />
+            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="500" x2="500" y1="80" y2="190" />
+            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="80" x2="450" y1="100" y2="220" />
+            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="920" x2="550" y1="100" y2="220" />
+            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="120" x2="450" y1="380" y2="260" />
+            <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="880" x2="550" y1="380" y2="260" />
           </svg>
         </div>
 
