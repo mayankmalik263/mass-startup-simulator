@@ -39,18 +39,18 @@ export default function Navigation() {
         <div className="hidden md:flex items-center gap-xl">
           <Link
             href="/#hero"
-            className="font-body-lg text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors bg-transparent"
+            className="font-label-mono text-primary font-bold border-b-2 border-primary pb-1 hover:text-primary transition-colors bg-transparent"
           >
             Simulator
           </Link>
           <Link
             href="/#council"
-            className="font-body-lg text-on-surface-variant hover:text-primary transition-colors bg-transparent"
+            className="font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-primary transition-colors bg-transparent"
           >
             Council
           </Link>
           <Link
-            className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
+            className="font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-primary transition-colors"
             href="/docs"
           >
             Docs
@@ -61,7 +61,7 @@ export default function Navigation() {
             <>
               <Link
                 href="/dashboard"
-                className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
+                className="hidden md:block font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-primary transition-all"
               >
                 Dashboard
               </Link>
@@ -70,7 +70,7 @@ export default function Navigation() {
                   await supabase.auth.signOut();
                   router.push('/');
                 }}
-                className="font-label-mono text-on-surface-variant hover:text-error transition-all"
+                className="font-label-mono text-on-surface-variant border-b-2 border-transparent pb-1 hover:text-error transition-all"
               >
                 Sign Out
               </button>
