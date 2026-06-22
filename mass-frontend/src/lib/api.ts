@@ -31,6 +31,24 @@ export async function startSimulation(data: SimulateRequest): Promise<Simulation
 }
 
 /**
+ * POST /clarify — generates clarifying questions for an idea.
+ */
+export async function clarifyIdea(idea: string, tier: string = "free"): Promise<{ questions: { question: string, options: string[] }[] }> {
+  const res = await fetch(`${API_URL}/clarify`, {
+    method: 'POST',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ idea, tier }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Clarification failed: ${err}`);
+  }
+
+  return res.json();
+}
+
+/**
  * GET /simulate/{job_id} — polls job status.
  * Returns { job_id, status, result?, error? }.
  */
@@ -112,5 +130,23 @@ export async function getSimulationById(id: string): Promise<any> {
     const err = await res.text();
     throw new Error(`Failed to fetch simulation: ${err}`);
   }
+  return res.json();
+}
+
+/**
+ * POST /simulate/{job_id}/chat — sends a follow-up question to the council.
+ */
+export async function chatWithCouncil(jobId: string, messages: {role: string, content: string}[], tier: string = "pro"): Promise<{reply: string}> {
+  const res = await fetch(`${API_URL}/simulate/${jobId}/chat`, {
+    method: 'POST',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ messages, tier }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Chat failed: ${err}`);
+  }
+
   return res.json();
 }

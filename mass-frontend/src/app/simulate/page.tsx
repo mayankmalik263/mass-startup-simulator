@@ -25,7 +25,7 @@ const AGENTS = [
 ];
 
 /* ─── Phase enum ───────────────────────────────────── */
-type Phase = 'form' | 'running' | 'done' | 'error';
+type Phase = 'form' | 'clarify' | 'running' | 'done' | 'error';
 
 export default function SimulatePage() {
   /* Form state */
@@ -48,6 +48,12 @@ export default function SimulatePage() {
   const [completedAgents, setCompletedAgents] = useState<string[]>([]);
   const [activityLog, setActivityLog] = useState<AgentEvent[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
+
+  /* Clarify state */
+  const [questions, setQuestions] = useState<{question: string, options: string[]}[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [isClarifying, setIsClarifying] = useState(false);
 
   const cleanupRef = useRef<(() => void) | null>(null);
   const [sessionChecked, setSessionChecked] = useState(false);
@@ -180,25 +186,70 @@ export default function SimulatePage() {
     e.preventDefault();
     if (!form.idea.trim()) return;
 
-    setPhase('running');
-    setActiveAgent(null);
-    setCompletedAgents([]);
-    setActivityLog([]);
-    setCurrentRound(1);
+    setIsClarifying(true);
     setErrorMsg('');
 
     try {
-      const job = await startSimulation(form);
-      setJobId(job.job_id);
-      
-      // If user is not logged in, mark their free demo as used
-      if (!session) {
-        localStorage.setItem('has_used_free_demo', 'true');
-        setHasUsedDemo(true);
-      }
+      const { clarifyIdea } = await import('@/lib/api');
+      const res = await clarifyIdea(form.idea, "pro"); // Use Pro tier for development
+      setQuestions(res.questions);
+      setCurrentQuestionIndex(0);
+      setAnswers({});
+      setPhase('clarify');
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to start simulation');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to clarify idea');
       setPhase('error');
+    } finally {
+      setIsClarifying(false);
+    }
+  };
+
+  const handleAnswerSelect = async (option: string) => {
+    const newAnswers = { ...answers, [currentQuestionIndex]: option };
+    setAnswers(newAnswers);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      // Start Simulation
+      const qaString = questions.map((q, i) => `${q.question} ${newAnswers[i]}`).join('. ');
+      
+      // Auto-detect market and constraints from answers
+      const combined = qaString.toLowerCase();
+      let market = form.market;
+      if (combined.includes('india')) market = 'India';
+      else if (combined.includes('global') || combined.includes('us')) market = 'Global';
+
+      let constraints = form.constraints;
+      if (combined.includes('bootstrap')) constraints += ' Bootstrapped';
+      else if (combined.includes('venture') || combined.includes('seed')) constraints += ' Venture Backed';
+
+      const finalForm = {
+        ...form,
+        market,
+        constraints: `${constraints}. Context: ${qaString}`,
+        tier: "pro" as any
+      };
+
+      setPhase('running');
+      setActiveAgent(null);
+      setCompletedAgents([]);
+      setActivityLog([]);
+      setCurrentRound(1);
+      setErrorMsg('');
+
+      try {
+        const job = await startSimulation(finalForm);
+        setJobId(job.job_id);
+        
+        if (!session) {
+          localStorage.setItem('has_used_free_demo', 'true');
+          setHasUsedDemo(true);
+        }
+      } catch (err) {
+        setErrorMsg(err instanceof Error ? err.message : 'Failed to start simulation');
+        setPhase('error');
+      }
     }
   };
 
@@ -258,6 +309,7 @@ export default function SimulatePage() {
           </h1>
           <p className="font-body-lg text-on-surface-variant max-w-[42rem] mx-auto">
             {phase === 'form' && 'Submit your startup idea and let the AI council analyze, debate, and produce a structured business plan.'}
+            {phase === 'clarify' && 'The AI Council has a few clarifying questions before they begin their analysis.'}
             {phase === 'running' && 'Your idea is being stress-tested by 5 specialized AI agents. Watch the debate unfold in real-time.'}
             {phase === 'done' && 'The council has reached consensus. Here\'s your structured startup plan.'}
             {phase === 'error' && 'Something went wrong during the simulation.'}
@@ -371,12 +423,40 @@ export default function SimulatePage() {
             <div className="flex justify-center pt-md">
               <button
                 type="submit"
-                className="bg-primary text-on-primary font-label-mono px-2xl py-md rounded border border-primary-container hover:brightness-125 transition-all text-base"
+                disabled={isClarifying}
+                className="bg-primary text-on-primary font-label-mono px-2xl py-md rounded border border-primary-container hover:brightness-125 transition-all text-base disabled:opacity-50"
               >
-                Start Simulation →
+                {isClarifying ? 'Analyzing Idea...' : 'Start Simulation →'}
               </button>
             </div>
           </form>
+        )}
+
+        {/* ═══ CLARIFY PHASE ═══ */}
+        {phase === 'clarify' && questions.length > 0 && (
+          <div className="border border-outline-variant bg-surface-container-lowest p-xl max-w-[42rem] mx-auto glow-border relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-tertiary to-primary"></div>
+            
+            <div className="font-label-mono text-outline text-[11px] mb-lg uppercase">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
+
+            <h2 className="font-display text-[24px] font-extrabold tracking-tighter mb-xl text-primary">
+              {questions[currentQuestionIndex].question}
+            </h2>
+
+            <div className="flex flex-col gap-md">
+              {questions[currentQuestionIndex].options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleAnswerSelect(option)}
+                  className="text-left bg-transparent border border-outline-variant p-md rounded hover:border-primary hover:bg-primary/5 transition-all font-body-lg text-on-surface"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* ═══ RUNNING PHASE ═══ */}

@@ -23,6 +23,9 @@ class StartupState(TypedDict):
     # SSE event streaming
     job_id: str
     user_id: str
+    
+    # Pro Features
+    tier: str
 
 def create_state(
     idea: str,
@@ -31,7 +34,8 @@ def create_state(
     revenue_model: str = "",
     constraints: str = "",
     job_id: str = "",
-    user_id: str = ""
+    user_id: str = "",
+    tier: str = "free"
 ) -> StartupState:
     return {
         "startup_idea": idea,
@@ -51,5 +55,6 @@ def create_state(
         "revenue_model": revenue_model,
         "constraints": constraints,
         "job_id": job_id,
-        "user_id": user_id
+        "user_id": user_id,
+        "tier": tier
     }

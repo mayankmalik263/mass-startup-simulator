@@ -2,6 +2,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from .context_block import build_context_block
+from .llm_router import get_llm_model
 
 load_dotenv()
 
@@ -22,20 +23,18 @@ REASONING LENS — Naval Ravikant principles:
 - Direction over speed: a slower plan pointed at a real,
   defensible position beats a faster plan heading nowhere.
 - Judgment > speed. One correct decision beats ten fast ones.
-- In 2025, a solo founder with AI tools ships faster and
-  cheaper than a 5-person team did in 2019. Price accordingly.
+- In 2026, a solo founder with AI tools ships faster and
+  cheaper than a 5-person team did in 2020. Price accordingly.
 """
 
 FINANCE_SELF_CHECK = """
 ⚠️  SELF-CHECK — Before finalizing your response, verify:
-1. Does any number assume external funding? → Remove it.
-2. Does any cost assume a full-time hired team? → Replace with freelancer/founder rates.
-3. Is any number in USD? → Convert to INR.
-4. Does build cost exceed ₹2L? → Cut scope or use cheaper tools.
-5. Does monthly burn exceed ₹1.5L before first revenue? → Reduce it.
-6. Does any recommendation say "raise" or "investors"? → Delete it.
+1. Do my estimates perfectly align with the Currency and Constraints (Bootstrap vs VC) defined in the Context Block?
+2. Did I suggest hiring a full-time team when the context says Bootstrapped? → Replace with freelancer/founder rates.
+3. Are my costs bloated? (An AI wrapper shouldn't cost $50k to build). → Force realistic 2026 AI-tool costs.
+4. Did I suggest raising money when the context says Bootstrapped? → Delete it.
 
-If you answered YES to any of the above, rewrite that section before responding.
+If you violated the Context Block rules, rewrite your section before responding.
 """
 
 
@@ -51,8 +50,9 @@ class FinanceAgent:
                 break
 
         prompt = f"""
-You are the CFO of a bootstrap startup. You are sharp, skeptical, and numbers-driven.
-You operate in 2025, where AI tools have collapsed the cost of building software.
+You are the CFO of a startup. You are sharp, skeptical, and numbers-driven.
+You operate in 2026, where AI tools have collapsed the cost of building software.
+Your financial strategy MUST perfectly align with the Constraints (Bootstrapped vs VC-backed) provided below.
 {build_context_block(state)}
 {FINANCE_PERSONA}
 
@@ -61,21 +61,19 @@ Startup Idea: {idea}
 CEO's Strategic Analysis:
 {ceo_message}
 
-Your job — answer each point within the constraints above:
+Your job — answer each point within the exact constraints and currency provided:
 
-1. BURN RATE: What is the realistic monthly burn for a bootstrap founder?
-   - Assume founder builds the product (no dev salary).
-   - Use freelancers only for tasks the founder cannot do.
-   - Cap: ₹1.5L/month max before first ₹1L MRR.
-   - List each line item with amount.
+1. BURN RATE: What is the realistic monthly burn?
+   - Adhere strictly to the Context Block Budget constraints.
+   - List each line item with exact amounts.
 
-2. MVP COST: What is the minimum personal capital to reach a working MVP?
-   - Assume founder uses AI tools: Cursor, v0, Supabase free tier, Vercel free tier.
-   - No external funding. No co-founder salaries.
-   - Target: under ₹2L total. Justify every rupee.
+2. MVP COST: What is the minimum capital to reach a working MVP?
+   - Adhere strictly to the Context Block Budget constraints.
+   - Target extreme efficiency using AI tools (Cursor, v0, Supabase).
+   - Justify every cost.
 
 3. PRICING: Suggest a pricing model for this idea.
-   - India SaaS range only: ₹99–₹999/month for B2C.
+   - Base it strictly on the Target Market context (India vs Global/US).
    - B2B bulk pricing if applicable.
    - Justify why this price point will convert.
 
@@ -83,15 +81,14 @@ Your job — answer each point within the constraints above:
    - Be specific. Name the assumption that could break.
    - Give a mitigation for each.
 
-5. RUNWAY: Given bootstrap capital of ₹2–5L personal savings, how many months
-   can the founder operate before needing revenue to survive?
-   - Show the math. Month-by-month if needed.
+5. RUNWAY: Given the standard starting capital for this constraint profile, how many months of runway exist before revenue/funding runs out?
+   - Show the math.
 
 {FINANCE_SELF_CHECK}
 """
 
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b:free",
+            model=get_llm_model(state.get("tier", "free")),
             messages=[
                 {"role": "user", "content": prompt}
             ]

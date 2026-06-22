@@ -15,44 +15,56 @@ Usage:
 
 
 def build_context_block(state: dict) -> str:
-    market = state.get("market", "not specified")
+    market = state.get("market", "Global")
     audience = state.get("target_audience", "not specified")
     revenue = state.get("revenue_model", "not specified")
     constraints = state.get("constraints", "none")
 
-    violations = []
+    is_india = "india" in market.lower()
+    is_bootstrapped = "bootstrap" in constraints.lower() or "bootstrapped" in constraints.lower()
+    is_vc = "venture" in constraints.lower() or "vc" in constraints.lower() or "funding" in constraints.lower()
 
-    # ── India-specific rules ──────────────────────────────────────────────────
-    if "india" in market.lower():
-        violations.append("❌ Never use USD — all numbers in INR (₹)")
-        violations.append("❌ Never reference SF/NYC/Bay Area salary or talent rates")
-        violations.append("❌ Never mention US VCs, Y Combinator, or US investors")
-        violations.append("❌ Never price in USD — India SaaS B2C range: ₹99–₹999/month")
-        violations.append("❌ Never assume US-style CAC or LTV benchmarks")
-        violations.append("✅ Use Indian examples: Zoho, Razorpay, Zerodha, CRED, HealthifyMe")
-        violations.append("✅ Payments via Razorpay / UPI — not Stripe")
-        violations.append("✅ Indian B2B sales cycle = 3–6 months minimum (procurement + IT approval)")
-        violations.append("✅ Indian freemium → paid conversion realistic rate: 2–5%, not 8–10%")
+    currency_sym = "₹ (INR)" if is_india else "$ (USD)"
+    
+    rules = []
+    
+    # ── Currency and Market Rules ──
+    rules.append(f"✅ CURRENCY: You MUST use {currency_sym} for all financial estimates. Do not use any other currency.")
+    if is_india:
+        rules.append("✅ MARKET: India. Use Indian benchmarks (Razorpay, UPI, realistic Indian salaries and purchasing power).")
+    else:
+        rules.append("✅ MARKET: Global/US. Use Global/US benchmarks (Stripe, global SaaS pricing, standard US metrics).")
 
-    # ── Bootstrap-specific rules ──────────────────────────────────────────────
-    if "bootstrap" in constraints.lower() or "bootstrapped" in constraints.lower():
-        violations.append("❌ Never suggest raising external funding of any kind")
-        violations.append("❌ Never mention seed round, Series A, angel investors, SAFE notes, or any investor")
-        violations.append("❌ Never suggest a full-time hired team — founder builds, uses freelancers only")
-        violations.append("❌ Never suggest monthly burn over ₹1.5L before first ₹1L MRR")
-        violations.append("❌ Never suggest total MVP build cost over ₹2L")
-        violations.append("❌ Never suggest CAC that exceeds 3-month LTV")
-        violations.append("✅ 2025 reality: solo founder + AI tools (Cursor, v0, Supabase free tier, Vercel free)")
-        violations.append("✅   can ship a working MVP in 3–4 weeks for under ₹2L total")
-        violations.append("✅ Revenue must begin month 1 or month 2 — no 'build first, monetize later'")
-        violations.append("✅ Every expense needs a direct revenue justification")
-        violations.append("✅ Use freelancers for tasks founder cannot do — cap freelance at ₹30–50k/month")
+    # ── Funding Constraints ──
+    if is_bootstrapped:
+        rules.append("❌ FUNDING: Never suggest raising external capital (no VCs, no angels, no seed rounds).")
+        rules.append("❌ TEAM: Never suggest hiring full-time employees. Founder builds using AI tools and minimal freelancers.")
+        if is_india:
+            rules.append("✅ BUDGET: Max MVP build cost should be strictly under ₹40,000 using AI tools.")
+            rules.append("✅ BURN RATE: Keep monthly burn strictly under ₹30,000 before first revenue.")
+        else:
+            rules.append("✅ BUDGET: Max MVP build cost should be strictly under $500 using AI tools (Cursor, Supabase, Vercel).")
+            rules.append("✅ BURN RATE: Keep monthly burn strictly under $500 before first revenue.")
+        rules.append("✅ TIMELINE: Ship the MVP within 2 to 4 weeks. Revenue must start in Month 1 or 2.")
+    elif is_vc:
+        rules.append("✅ FUNDING: Assume venture-backed. Focus on aggressive growth, market capture, and high velocity.")
+        rules.append("✅ TEAM: Founder can hire a lean, elite engineering and go-to-market team.")
+        if is_india:
+            rules.append("✅ BUDGET: Seed stage. Assume 12-18 month runway of ₹3Cr to ₹5Cr.")
+        else:
+            rules.append("✅ BUDGET: Seed stage. Assume 12-18 month runway of $1M to $3M.")
+    else:
+        # Default reasonable constraints
+        rules.append("✅ TIMELINE: Ship the MVP within 4 weeks. Use 2026 AI tools to drastically cut development costs.")
 
-    violations_text = (
-        "\n".join(violations)
-        if violations
-        else "None specific — apply general good judgment."
-    )
+    # ── Y-Combinator & Specialist Business Logic ──
+    rules.append("🧠 BUSINESS FRAMEWORK (Y-Combinator & Lean Startup):")
+    rules.append("  - Do things that don't scale initially to acquire the first 100 passionate customers.")
+    rules.append("  - A 2026 Solo Founder with AI tools is equivalent to a 5-person engineering team in 2020. Price accordingly.")
+    rules.append("  - Be hyper-specific. Generic advice is useless. Identify the exact 'wedge' to enter the market.")
+    rules.append("  - Validate the problem before writing any code (or use no-code/AI to validate instantly).")
+
+    rules_text = "\n".join(rules)
 
     return f"""
 CRITICAL CONTEXT — THIS OVERRIDES ALL DEFAULT ASSUMPTIONS:
@@ -64,7 +76,7 @@ Revenue Model   : {revenue}
 Constraints     : {constraints}
 
 HARD RULES FOR THIS CONTEXT:
-{violations_text}
+{rules_text}
 
 Before every number, price, team size, or recommendation —
 ask: "Does this hold for {market} under {constraints}?"

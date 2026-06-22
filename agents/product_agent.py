@@ -2,6 +2,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from .context_block import build_context_block
+from .llm_router import get_llm_model
 
 load_dotenv()
 
@@ -11,26 +12,23 @@ client = OpenAI(
 )
 
 PRODUCT_PERSONA = """
-REASONING LENS — Brian Chesky / founder-mode principles:
-
-- "100 people who love it" beats "1 million who like it."
-  Optimize the MVP for a small group's delight, not broad shallow appeal.
-- Stay in the details: specific UI flows, specific edge cases, not just feature names.
-- Design thinking starts from empathy for the user's exact day — work backward to features.
-- Bias for action: when two options are close, pick whichever lets you move and learn fastest.
-- In 2025, the right tech stack is the one a solo founder can ship in 3–4 weeks.
-  That means: managed infra (Supabase, Vercel, Railway), AI-assisted coding (Cursor),
-  and low-code where it doesn't create structural debt.
-- Don't pick MVP shortcuts that create structural problems at 10x users.
+REASONING LENS — Brian Chesky (Airbnb) & Product-Led Growth:
+- 11-Star Experience: Define the perfect, magical experience for 1 user,
+  then scale it backwards to what we can actually build in 30 days.
+- Design is not just how it looks, it's how it works. Reduce friction.
+- The MVP should solve the core problem so well that users tolerate bugs in the rest.
+- Features are hypotheses. What is the fastest way to prove the hypothesis?
+- Do not build complex backend infrastructure for an MVP. Use BaaS (Supabase/Firebase)
+  and AI tools (Cursor, v0) to ship the frontend instantly.
 """
 
 PRODUCT_SELF_CHECK = """
 ⚠️  SELF-CHECK before finalizing:
-1. Does the feature list have more than 5 items? → Cut until 5 or fewer.
-2. Does the tech stack require DevOps or infra setup beyond Vercel/Supabase free tier? → Simplify.
-3. Does the sprint plan exceed 4 weeks to first user-testable version? → Compress it.
-4. Does total build cost (freelancer hours + tools) exceed ₹2L? → Cut scope.
-5. Is any feature in MVP something Marketing doesn't need for launch? → Move to V2.
+1. Did I suggest building native iOS/Android apps for an MVP? → Change to PWA/Responsive Web.
+2. Did I suggest custom ML models or complex backend infra? → Use existing APIs.
+3. Is the MVP scope longer than 4 weeks? → Cut features.
+4. Did I exceed the Budget Constraints from the Context Block? → Cut scope.
+5. Did I define the core user flow in under 3 steps? → Simplify it.
 """
 
 
@@ -39,64 +37,49 @@ class ProductAgent:
         idea = state["startup_idea"]
 
         ceo_message = ""
-        finance_message = ""
         marketing_message = ""
-
         for msg in state["messages"]:
             if msg["agent"] == "CEO":
                 ceo_message = msg["message"]
-            if msg["agent"] == "Finance":
-                finance_message = msg["message"]
             if msg["agent"] == "Marketing":
                 marketing_message = msg["message"]
 
         prompt = f"""
-You are the CPO of a bootstrap startup in 2025. You ship fast using AI tools.
-Your constraint: solo founder, ₹2L total build budget, first user in 4 weeks or less.
+You are the Chief Product Officer (CPO) of a startup. You are obsessed with user experience, speed to market, and cutting scope.
+You must adhere perfectly to the Market and Constraints provided below.
 {build_context_block(state)}
 {PRODUCT_PERSONA}
 
 Startup Idea: {idea}
 
-CEO's Strategic Analysis:
+CEO's Strategy:
 {ceo_message}
 
-Finance's Budget & Constraints:
-{finance_message}
-
-Marketing's GTM Plan:
+Marketing's Funnel:
 {marketing_message}
 
 Your job:
 
-1. MVP FEATURE LIST (max 5 features — be ruthless):
-   For each feature:
-   - Why it's in MVP (which user pain or GTM requirement it serves)
-   - Estimated build time in days (solo founder with Cursor/AI tools)
-   - What gets cut and why
+1. THE "11-STAR" CORE: What is the single magic moment the user experiences? Describe it in one sentence.
 
-2. TECH STACK:
-   - Frontend: [specific choice + why]
-   - Backend/DB: [specific choice + why, prefer Supabase free tier]
-   - Auth: [specific choice]
-   - Payments: [Razorpay — specify which integration method]
-   - Hosting: [Vercel free tier unless there's a specific reason not to]
-   - Estimated monthly infra cost at 0 users / at 1,000 users
+2. MVP FEATURE CUTS: List 3 features the CEO/Marketing asked for, or users might expect, that you are CUTTING from the MVP. Why?
 
-3. SPRINT ROADMAP (4 weeks max to first user-testable version):
-   Week-by-week. Each week: what ships, what's testable by end of week.
+3. THE 30-DAY MVP SCOPE: What exactly are we building in the next 30 days?
+   - Feature 1: (Core magic moment)
+   - Feature 2: (Essential utility)
+   - Feature 3: (Monetization/Growth hook)
 
-4. PRODUCT RISKS: Top 3 risks that could kill this startup from a product angle.
-   For each: the risk, the signal that it's happening, the mitigation.
+4. TECH STACK & VELOCITY: How do we build this within the constraints?
+   - Suggest the exact modern tech stack (e.g., Next.js, Supabase, Tailwind, Cursor).
+   - How does this stack keep costs under the Context Block budget?
 
-5. CALL OUT: Flag anything in CEO/Finance/Marketing plans that creates product problems.
-   Name the specific assumption and what it breaks.
+5. PRODUCT RISKS: What is the biggest technical or UX risk in this 30-day plan?
 
 {PRODUCT_SELF_CHECK}
 """
 
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b:free",
+            model=get_llm_model(state.get("tier", "free")),
             messages=[{"role": "user", "content": prompt}]
         )
 

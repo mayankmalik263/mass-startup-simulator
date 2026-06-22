@@ -286,7 +286,7 @@ def build_graph():
 
 # ── run ──────────────────────────────────────────────────
 
-def run(idea: str, context: dict = None, job_id: str = "", user_id: str = ""):
+def run(idea: str, context: dict = None, job_id: str = "", user_id: str = "", tier: str = "free"):
     if context is None:
         context = {}
     
@@ -297,7 +297,8 @@ def run(idea: str, context: dict = None, job_id: str = "", user_id: str = ""):
         revenue_model=context.get("revenue_model", ""),
         constraints=context.get("constraints", ""),
         job_id=job_id,
-        user_id=user_id
+        user_id=user_id,
+        tier=tier
     )
     print("\n[DEBUG] DEBUG STATE:", {
     "market": state.get("market"),

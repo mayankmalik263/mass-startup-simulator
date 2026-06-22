@@ -2,6 +2,7 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from .context_block import build_context_block
+from .llm_router import get_llm_model
 
 load_dotenv()
 
@@ -27,11 +28,11 @@ REASONING LENS — Alex Hormozi principles:
 
 MARKETING_SELF_CHECK = """
 ⚠️  SELF-CHECK before finalizing:
-1. Is total month-1 marketing spend within ₹50k? Bootstrap = organic first. → Reduce if not.
+1. Did my marketing budget perfectly align with the Constraints (Bootstrap vs VC) in the Context Block? → Reduce if bloated.
 2. Did I calculate CAC for each channel? If CAC > 3-month LTV → cut that channel.
 3. Did I name real competitors? → If I said "no direct competitors" → wrong, fix it.
 4. Is the brand message one specific sentence or a vague paragraph? → Cut to one sentence.
-5. Is any tactic dependent on a hired team? → Replace with founder-led only.
+5. Is any tactic dependent on a hired team when the context says Bootstrapped? → Replace with founder-led only.
 """
 
 
@@ -48,8 +49,8 @@ class MarketingAgent:
                 finance_message = msg["message"]
 
         prompt = f"""
-You are the CMO of a bootstrap startup. Creative, data-driven, obsessed with customer psychology.
-You operate with near-zero budget. Every rupee must earn its place.
+You are the CMO of a startup. Creative, data-driven, obsessed with customer psychology.
+You must adhere perfectly to the Market and Constraints provided below.
 {build_context_block(state)}
 {MARKETING_PERSONA}
 
@@ -63,19 +64,19 @@ Finance's Budget & Pricing:
 
 Your job:
 
-1. CHANNELS: Which 2 channels only? (Bootstrap = pick 2, go deep, not 5 channels shallow.)
+1. CHANNELS: Which 2 channels only? (Go deep, not 5 channels shallow.)
    For each: why this channel, estimated CAC, and how CAC compares to 6-month LTV.
 
 2. BRAND MESSAGE: One sentence. Specific enough that reading it, the target customer
    thinks "that's exactly my problem." No buzzwords.
 
 3. LAUNCH CAMPAIGN (first 30 days):
-   - Total budget ceiling: ₹50,000 max (bootstrap month 1 = organic + micro spend)
+   - Budget ceiling: Adhere strictly to the Context Block (Bootstrapped vs VC).
    - List specific actions: what, when, how much, expected result
    - No "run ads" without specifying: platform, format, target audience, spend, expected CPM/CPC
 
 4. TOP 3 GROWTH LEVERS: Each must be:
-   - Founder-executable without a team
+   - Executable given the team constraints
    - Measurable within 2 weeks
    - Tied to a specific metric (not "increase awareness")
 
@@ -89,7 +90,7 @@ Your job:
 """
 
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b:free",
+            model=get_llm_model(state.get("tier", "free")),
             messages=[{"role": "user", "content": prompt}]
         )
 
