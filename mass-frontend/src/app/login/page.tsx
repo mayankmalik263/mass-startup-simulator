@@ -1,8 +1,41 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        router.push('/history');
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        // If email confirmation is enabled, it might require checking email
+        router.push('/history');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Nav bar */}
@@ -17,77 +50,76 @@ export default function LoginPage() {
         </nav>
       </header>
 
-      <main className="flex-1 flex items-center justify-center px-margin-mobile">
+      <main className="flex-1 flex items-center justify-center px-margin-mobile pt-[100px]">
         <div className="w-full max-w-[28rem]">
           {/* Header */}
           <div className="text-center mb-2xl">
             <h1 className="font-display text-[48px] font-extrabold tracking-tighter mb-md">
-              Login
+              {isLogin ? 'Login' : 'Sign Up'}
             </h1>
             <p className="font-body-lg text-on-surface-variant">
-              Access your simulation history and saved plans.
+              {isLogin ? 'Access your private simulation history.' : 'Create an account to save simulations.'}
             </p>
           </div>
 
-          {/* Coming soon notice */}
-          <div className="border border-primary bg-primary/5 p-lg mb-xl text-center glow-border">
-            <span className="material-symbols-outlined text-primary text-[32px] mb-sm block">
-              lock
-            </span>
-            <p className="font-label-mono text-primary mb-xs">COMING SOON</p>
-            <p className="font-body-sm text-on-surface-variant">
-              Authentication is being built. For now, you can use the simulator without an account.
-            </p>
-          </div>
+          {error && (
+            <div className="border border-error bg-error/10 p-md mb-xl text-center">
+              <p className="font-body-sm text-error">{error}</p>
+            </div>
+          )}
 
-          {/* Form (disabled/visual only) */}
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="space-y-md"
-          >
-            <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-              <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-md">
+            <div className="border border-outline-variant bg-surface-container-lowest p-lg focus-within:border-primary focus-within:glow-border transition-all">
+              <label className="font-label-mono text-primary mb-sm block uppercase text-[11px]">
                 Email
               </label>
               <input
                 type="email"
-                disabled
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-transparent border-b border-outline text-on-surface/40 font-mono py-xs cursor-not-allowed placeholder:text-on-surface-variant/30"
+                className="w-full bg-transparent border-b border-outline text-on-surface font-mono py-xs focus:outline-none focus:border-primary placeholder:text-on-surface-variant/30"
               />
             </div>
 
-            <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-              <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
+            <div className="border border-outline-variant bg-surface-container-lowest p-lg focus-within:border-primary focus-within:glow-border transition-all">
+              <label className="font-label-mono text-primary mb-sm block uppercase text-[11px]">
                 Password
               </label>
               <input
                 type="password"
-                disabled
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-transparent border-b border-outline text-on-surface/40 font-mono py-xs cursor-not-allowed placeholder:text-on-surface-variant/30"
+                className="w-full bg-transparent border-b border-outline text-on-surface font-mono py-xs focus:outline-none focus:border-primary placeholder:text-on-surface-variant/30"
               />
             </div>
 
             <button
-              disabled
-              className="w-full bg-surface-container-high text-on-surface-variant font-label-mono py-md rounded border border-outline cursor-not-allowed opacity-50"
+              disabled={loading}
+              type="submit"
+              className="w-full bg-primary text-on-primary font-label-mono py-md rounded hover:brightness-110 transition-all disabled:opacity-50 flex justify-center items-center gap-sm"
             >
-              Sign In
+              {loading && <span className="material-symbols-outlined animate-spin text-[16px]">sync</span>}
+              {isLogin ? 'SIGN IN' : 'CREATE ACCOUNT'}
             </button>
           </form>
 
-          {/* Redirect to simulator */}
-          <div className="text-center mt-xl">
-            <p className="font-body-sm text-on-surface-variant mb-sm">
-              Want to try the simulator now?
-            </p>
-            <Link
-              href="/simulate"
-              className="font-label-mono text-primary hover:brightness-125 transition-all"
+          {/* Toggle Login/Signup */}
+          <div className="text-center mt-xl border-t border-outline-variant pt-lg">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError(null);
+              }}
+              className="font-body-sm text-on-surface-variant hover:text-primary transition-colors"
             >
-              Launch Simulator →
-            </Link>
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
+            </button>
           </div>
         </div>
       </main>

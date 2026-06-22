@@ -30,10 +30,12 @@ def save_state(state: dict, report: str, business_plan=None):
     
     # Save to Supabase
     job_id = state.get("job_id")
-    if job_id:
+    user_id = state.get("user_id")
+    if job_id and user_id:
         try:
             supabase = get_supabase()
             record = {
+                "user_id": user_id,
                 "job_id": job_id,
                 "idea": state.get("startup_idea", ""),
                 "target_audience": state.get("target_audience", ""),

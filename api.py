@@ -1,7 +1,8 @@
 import asyncio
 import json
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+from auth import get_current_user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -34,7 +35,7 @@ class SimulateRequest(BaseModel):
     constraints: str = ""
 
 
-def run_simulation(job_id: str, req: SimulateRequest):
+def run_simulation(job_id: str, req: SimulateRequest, user_id: str):
     try:
         update_job(job_id, status=JobStatus.RUNNING)
 
@@ -45,7 +46,7 @@ def run_simulation(job_id: str, req: SimulateRequest):
             "constraints": req.constraints
         }
 
-        final_state = run(req.idea, context, job_id=job_id)
+        final_state = run(req.idea, context, job_id=job_id, user_id=user_id)
 
         result = {
             "final_report": final_state.get("final_report", ""),
@@ -73,9 +74,9 @@ def root():
 
 
 @app.post("/simulate")
-def simulate(req: SimulateRequest, background_tasks: BackgroundTasks):
+def simulate(req: SimulateRequest, background_tasks: BackgroundTasks, user_id: str = Depends(get_current_user)):
     job_id = create_job()
-    background_tasks.add_task(run_simulation, job_id, req)
+    background_tasks.add_task(run_simulation, job_id, req, user_id)
     return {"job_id": job_id, "status": "pending"}
 
 
@@ -142,19 +143,19 @@ async def stream_simulation(job_id: str):
     )
 
 @app.get("/simulations")
-def list_simulations():
+def list_simulations(user_id: str = Depends(get_current_user)):
     try:
         supabase = get_supabase()
-        response = supabase.table("simulations").select("id, job_id, idea, created_at").order("created_at", desc=True).execute()
+        response = supabase.table("simulations").select("id, job_id, idea, created_at").eq("user_id", user_id).order("created_at", desc=True).execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/simulations/{id}")
-def get_simulation_by_id(id: str):
+def get_simulation_by_id(id: str, user_id: str = Depends(get_current_user)):
     try:
         supabase = get_supabase()
-        response = supabase.table("simulations").select("*").eq("id", id).execute()
+        response = supabase.table("simulations").select("*").eq("id", id).eq("user_id", user_id).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Simulation not found")
         return response.data[0]

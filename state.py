@@ -22,6 +22,7 @@ class StartupState(TypedDict):
 
     # SSE event streaming
     job_id: str
+    user_id: str
 
 def create_state(
     idea: str,
@@ -29,7 +30,8 @@ def create_state(
     market: str = "",
     revenue_model: str = "",
     constraints: str = "",
-    job_id: str = ""
+    job_id: str = "",
+    user_id: str = ""
 ) -> StartupState:
     return {
         "startup_idea": idea,
@@ -48,6 +50,6 @@ def create_state(
         "market": market,
         "revenue_model": revenue_model,
         "constraints": constraints,
-
-        "job_id": job_id
+        "job_id": job_id,
+        "user_id": user_id
     }

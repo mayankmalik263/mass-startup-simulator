@@ -1,6 +1,15 @@
 import type { SimulateRequest, SimulationJob, AgentEvent } from '@/types/simulation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { supabase } from './supabase';
+
+async function getAuthHeaders() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return {
+    'Content-Type': 'application/json',
+    ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+  };
+}
 
 /**
  * POST /simulate — kicks off a background simulation job.
@@ -9,7 +18,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export async function startSimulation(data: SimulateRequest): Promise<SimulationJob> {
   const res = await fetch(`${API_URL}/simulate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
@@ -75,7 +84,11 @@ export function streamSimulation(
  * GET /simulations — fetch past simulation history.
  */
 export async function getSimulations(): Promise<any[]> {
-  const res = await fetch(`${API_URL}/simulations`, { cache: 'no-store' });
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/simulations`, { 
+    cache: 'no-store',
+    headers 
+  });
   if (!res.ok) {
     const err = await res.text();
     throw new Error(`Failed to fetch simulations: ${err}`);
@@ -87,7 +100,11 @@ export async function getSimulations(): Promise<any[]> {
  * GET /simulations/{id} — fetch a specific past simulation.
  */
 export async function getSimulationById(id: string): Promise<any> {
-  const res = await fetch(`${API_URL}/simulations/${id}`, { cache: 'no-store' });
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/simulations/${id}`, { 
+    cache: 'no-store',
+    headers
+  });
   if (!res.ok) {
     if (res.status === 404) {
       throw new Error('Simulation not found');

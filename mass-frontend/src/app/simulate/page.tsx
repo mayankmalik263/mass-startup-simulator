@@ -9,6 +9,8 @@ import type {
   BusinessPlan,
   AgentEvent,
 } from '@/types/simulation';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { ResultsDisplay } from '@/components/ResultsDisplay';
 
 /* ─── Agent display config ─────────────────────────── */
@@ -48,7 +50,19 @@ export default function SimulatePage() {
   const [currentRound, setCurrentRound] = useState(1);
 
   const cleanupRef = useRef<(() => void) | null>(null);
+  const [sessionChecked, setSessionChecked] = useState(false);
+  const router = useRouter();
   const logEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push('/login');
+      } else {
+        setSessionChecked(true);
+      }
+    });
+  }, [router]);
 
   /* Auto-scroll activity log */
   useEffect(() => {
@@ -196,6 +210,14 @@ export default function SimulatePage() {
   };
 
   /* ─── Render ─────────────────────────────────────── */
+  if (!sessionChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center font-label-mono text-primary">
+        LOADING TERMINAL...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Nav bar */}

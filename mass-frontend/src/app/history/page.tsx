@@ -2,19 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getSimulations } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 export default function HistoryPage() {
   const [simulations, setSimulations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const router = useRouter();
+
   useEffect(() => {
-    getSimulations()
-      .then(setSimulations)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      
+      getSimulations()
+        .then(setSimulations)
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    });
+  }, [router]);
 
   return (
     <div className="min-h-screen">
@@ -24,6 +35,15 @@ export default function HistoryPage() {
             MASS
           </Link>
           <div className="flex items-center gap-md">
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                router.push('/login');
+              }}
+              className="font-label-mono text-on-surface-variant hover:text-error transition-colors bg-transparent border border-outline px-sm py-xs rounded text-xs"
+            >
+              Sign Out
+            </button>
             <Link href="/" className="font-label-mono text-on-surface-variant hover:text-primary transition-colors">
               ← Back to Home
             </Link>
