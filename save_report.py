@@ -16,13 +16,13 @@ def save_state(state: dict, report: str, business_plan=None):
     with open(f"{filename}.txt", "w", encoding="utf-8") as f:
         f.write(report)
     
-    print(f"\n💾 Saved to: {filename}.json")
-    print(f"📄 Report saved to: {filename}.txt")
+    print(f"\n[SAVE] Saved to: {filename}.json")
+    print(f"[REPORT] Report saved to: {filename}.txt")
     
     if business_plan is not None:
         plan_path = f"{filename}_plan.json"
         with open(plan_path, "w", encoding="utf-8") as f:
             f.write(business_plan.model_dump_json(indent=2))
-        print(f"🧱 Structured plan saved to: {plan_path}")
+        print(f"[STRUCTURED] Structured plan saved to: {plan_path}")
     
     return filename
