@@ -124,7 +124,7 @@ No text before or after the JSON. No markdown fences.
         except (json.JSONDecodeError, AssertionError, IndexError) as e:
             # CHANGED: parse failure → NOT agreed (safe default, not agreed)
             # Rationale: better to loop once more than to pass a bad plan through
-            print(f"⚠️  Supervisor JSON parse failed ({e}). Defaulting to NOT agreed.")
+            print(f"[WARNING] Supervisor JSON parse failed ({e}). Defaulting to NOT agreed.")
             result = {
                 "agreed": False,
                 "reason": "Supervisor parse error — treating as unresolved to prevent bad plan passing through",
@@ -132,7 +132,7 @@ No text before or after the JSON. No markdown fences.
                 "decisions": []
             }
 
-        print(f"  Supervisor verdict: {'✅ AGREED' if result['agreed'] else '❌ NOT AGREED'}")
+        print(f"  Supervisor verdict: {'[AGREED]' if result['agreed'] else '[NOT AGREED]'}")
         print(f"  Reason: {result.get('reason', '')}")
         if result.get("conflicts"):
             for c in result["conflicts"]:

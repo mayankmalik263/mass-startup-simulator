@@ -36,7 +36,7 @@ def _summarize(text: str, max_len: int = 150) -> str:
 def ceo_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
     round_num = state["iteration"] + 1
-    print(f"\n🤖 CEO Agent thinking... (round {round_num})\n")
+    print(f"\n[CEO] Agent thinking... (round {round_num})\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "CEO", "round": round_num})
 
@@ -61,7 +61,7 @@ def ceo_node(state: StartupState) -> StartupState:
 def finance_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
     round_num = state["iteration"] + 1
-    print(f"💰 Finance Agent thinking... (round {round_num})\n")
+    print(f"[Finance] Agent thinking... (round {round_num})\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Finance", "round": round_num})
 
@@ -85,7 +85,7 @@ def finance_node(state: StartupState) -> StartupState:
 
 def marketing_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
-    print("📣 Marketing Agent thinking...\n")
+    print("[Marketing] Agent thinking...\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Marketing", "round": state["iteration"]})
 
@@ -108,7 +108,7 @@ def marketing_node(state: StartupState) -> StartupState:
 
 def product_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
-    print("🛠️ Product Agent thinking...\n")
+    print("[Product] Agent thinking...\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Product", "round": state["iteration"]})
 
@@ -131,7 +131,7 @@ def product_node(state: StartupState) -> StartupState:
 
 def sales_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
-    print("🤝 Sales Agent thinking...\n")
+    print("[Sales] Agent thinking...\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Sales", "round": state["iteration"]})
 
@@ -155,7 +155,7 @@ def sales_node(state: StartupState) -> StartupState:
 def supervisor_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
     round_num = state["iteration"] + 1
-    print("🎯 Supervisor checking consensus...\n")
+    print("[Supervisor] Checking consensus...\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Supervisor", "round": round_num})
 
@@ -192,14 +192,14 @@ def supervisor_node(state: StartupState) -> StartupState:
 
 def report_node(state: StartupState) -> StartupState:
     job_id = state.get("job_id", "")
-    print("📊 Generating final report...\n")
+    print("[Report] Generating final report...\n")
 
     event_bus.publish(job_id, {"type": "agent_start", "agent": "Report", "round": state["iteration"]})
 
     report = generate_report(state)
     state["final_report"] = report
     
-    print("🧱 Extracting structured business plan...\n")
+    print("[Structured Extraction] Extracting structured business plan...\n")
     business_plan = extract_structured_plan(report, state["startup_idea"])
     
     save_state(state, report, business_plan)
@@ -228,14 +228,14 @@ def should_debate_more(state: StartupState) -> str:
     job_id = state.get("job_id", "")
 
     if state["ceo_finance_agreed"]:
-        print("✅ CEO + Finance agreed. Moving to Marketing.\n")
+        print("[OK] CEO + Finance agreed. Moving to Marketing.\n")
         return "agreed"
     
     if state["iteration"] >= state["max_iterations"]:
-        print("⚠️ Max debate rounds hit. Forcing consensus.\n")
+        print("[WARNING] Max debate rounds hit. Forcing consensus.\n")
         return "agreed"
     
-    print(f"🔄 No consensus yet. Round {state['iteration'] + 1} starting.\n")
+    print(f"[RETRY] No consensus yet. Round {state['iteration'] + 1} starting.\n")
 
     event_bus.publish(job_id, {
         "type": "debate_loop",
@@ -298,7 +298,7 @@ def run(idea: str, context: dict = None, job_id: str = ""):
         constraints=context.get("constraints", ""),
         job_id=job_id
     )
-    print("\n🔍 DEBUG STATE:", {
+    print("\n[DEBUG] DEBUG STATE:", {
     "market": state.get("market"),
     "target_audience": state.get("target_audience"),
     "revenue_model": state.get("revenue_model"),
@@ -328,11 +328,11 @@ def run(idea: str, context: dict = None, job_id: str = ""):
     print("=" * 50)
     print(final_state["final_report"])
     
-    print(f"\n📋 STATE SNAPSHOT:")
+    print(f"\n[SNAPSHOT] STATE SNAPSHOT:")
     print(f"Messages logged: {len(final_state['messages'])}")
     print(f"Debate rounds: {final_state['iteration']}")
     print(f"Conflicts detected: {len(final_state['conflicts'])}")
     for msg in final_state["messages"]:
-        print(f"  → {msg['agent']} spoke (round {msg.get('round', 0) + 1})")
+        print(f"  -> {msg['agent']} spoke (round {msg.get('round', 0) + 1})")
     
     return final_state

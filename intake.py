@@ -9,26 +9,26 @@ def get_user_context(idea: str) -> dict:
     target_audience = input(
         "1. Who is this for?\n"
         "   (e.g. college students, working moms, B2B SaaS teams)\n"
-        "   → "
+        "   -> "
     ).strip()
 
     market = input(
         "\n2. Which market/geography?\n"
         "   (e.g. India, US, Southeast Asia, global)\n"
-        "   → "
+        "   -> "
     ).strip()
 
     revenue_model = input(
         "\n3. Revenue model preference?\n"
         "   (e.g. freemium, subscription, one-time, B2B enterprise)\n"
-        "   → "
+        "   -> "
     ).strip()
 
     constraints = input(
     "\n4. Any hard constraints?\n"
     "   (e.g. bootstrapped, no VC, mobile-first, Indian pricing only)\n"
     "   TIP: Be specific — 'bootstrapped' means no VC, revenue from day 1\n"
-    "   → "
+    "   -> "
     ).strip()
 
     print("\n" + "=" * 50)
