@@ -24,7 +24,7 @@ const features = [
   {
     icon: 'data_object',
     title: 'Structured Business Plans',
-    description: 'View directly in the UI or export to raw JSON for developer workflows.',
+    description: 'UI-based viewing is live, with JSON export functionality currently being prototyped.',
     span: 'md:col-span-2',
   },
   {
