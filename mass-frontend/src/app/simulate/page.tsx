@@ -51,18 +51,25 @@ export default function SimulatePage() {
 
   const cleanupRef = useRef<(() => void) | null>(null);
   const [sessionChecked, setSessionChecked] = useState(false);
+  const [session, setSession] = useState<any>(null);
+  const [hasUsedDemo, setHasUsedDemo] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
   const router = useRouter();
   const logEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check local storage for demo usage
+    const demoUsed = localStorage.getItem('has_used_free_demo') === 'true';
+    setHasUsedDemo(demoUsed);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.push('/login');
-      } else {
-        setSessionChecked(true);
+      setSession(session);
+      if (!session && demoUsed) {
+        setPaywallVisible(true);
       }
+      setSessionChecked(true);
     });
-  }, [router]);
+  }, []);
 
   /* Auto-scroll activity log */
   useEffect(() => {
@@ -183,6 +190,12 @@ export default function SimulatePage() {
     try {
       const job = await startSimulation(form);
       setJobId(job.job_id);
+      
+      // If user is not logged in, mark their free demo as used
+      if (!session) {
+        localStorage.setItem('has_used_free_demo', 'true');
+        setHasUsedDemo(true);
+      }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to start simulation');
       setPhase('error');
@@ -251,8 +264,38 @@ export default function SimulatePage() {
           </p>
         </div>
 
+        {/* ═══ PAYWALL PHASE ═══ */}
+        {paywallVisible && phase === 'form' && (
+          <div className="border border-outline-variant bg-surface-container-lowest p-xl text-center max-w-[32rem] mx-auto glow-border relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-tertiary to-primary"></div>
+            <span className="material-symbols-outlined text-primary text-[48px] mb-md block">
+              lock
+            </span>
+            <h2 className="font-display text-[32px] font-extrabold tracking-tighter mb-sm">
+              Free Demo Used
+            </h2>
+            <p className="font-body-lg text-on-surface-variant mb-xl">
+              You have already used your one-time free simulation. To run more simulations and access your private history dashboard, please create an account.
+            </p>
+            <div className="flex flex-col gap-md">
+              <Link
+                href="/login"
+                className="bg-primary text-on-primary font-label-mono px-xl py-md rounded hover:brightness-110 transition-all text-base w-full block text-center"
+              >
+                Create Account / Login
+              </Link>
+              <Link
+                href="/"
+                className="bg-transparent border border-outline text-on-surface-variant font-label-mono px-xl py-md rounded hover:text-primary transition-colors text-base w-full block text-center"
+              >
+                Back to Home
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* ═══ FORM PHASE ═══ */}
-        {phase === 'form' && (
+        {!paywallVisible && phase === 'form' && (
           <form onSubmit={handleSubmit} className="space-y-lg">
             {/* Main idea */}
             <div className="border border-outline-variant bg-surface-container-lowest p-lg">

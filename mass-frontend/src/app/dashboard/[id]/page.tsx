@@ -30,8 +30,8 @@ export default function HistoryDetailPage() {
             MASS
           </Link>
           <div className="flex items-center gap-md">
-            <Link href="/history" className="font-label-mono text-on-surface-variant hover:text-primary transition-colors">
-              ← Back to History
+            <Link href="/dashboard" className="font-label-mono text-on-surface-variant hover:text-primary transition-colors">
+              ← Back to Dashboard
             </Link>
           </div>
         </nav>

@@ -22,12 +22,12 @@ export default function LoginPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push('/history');
+        router.push('/dashboard');
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         // If email confirmation is enabled, it might require checking email
-        router.push('/history');
+        router.push('/dashboard');
       }
     } catch (err: any) {
       setError(err.message);

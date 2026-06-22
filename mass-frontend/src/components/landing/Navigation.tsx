@@ -1,8 +1,28 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function Navigation() {
+  const [session, setSession] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -29,12 +49,14 @@ export default function Navigation() {
           >
             Council
           </button>
-          <Link
-            className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
-            href="/history"
-          >
-            History
-          </Link>
+          {session && (
+            <Link
+              className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
+              href="/dashboard"
+            >
+              Dashboard
+            </Link>
+          )}
           <Link
             className="font-body-lg text-on-surface-variant hover:text-primary transition-colors"
             href="/docs"
@@ -49,17 +71,37 @@ export default function Navigation() {
           </button>
         </div>
         <div className="flex items-center gap-md">
-          <Link
-            href="/login"
-            className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
-          >
-            Login
-          </Link>
+          {session ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  router.push('/');
+                }}
+                className="font-label-mono text-on-surface-variant hover:text-error transition-all"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden md:block font-label-mono text-on-surface-variant hover:text-primary transition-all"
+            >
+              Login
+            </Link>
+          )}
           <Link
             href="/simulate"
             className="bg-primary text-on-primary px-lg py-sm rounded border border-primary-container font-label-mono hover:brightness-110 transition-all"
           >
-            Launch Terminal
+            {session ? 'Launch Terminal' : 'Start Free Demo'}
           </Link>
         </div>
       </nav>

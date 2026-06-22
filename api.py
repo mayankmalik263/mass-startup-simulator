@@ -2,7 +2,7 @@ import asyncio
 import json
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
-from auth import get_current_user
+from auth import get_current_user, get_optional_user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -74,7 +74,7 @@ def root():
 
 
 @app.post("/simulate")
-def simulate(req: SimulateRequest, background_tasks: BackgroundTasks, user_id: str = Depends(get_current_user)):
+def simulate(req: SimulateRequest, background_tasks: BackgroundTasks, user_id: str | None = Depends(get_optional_user)):
     job_id = create_job()
     background_tasks.add_task(run_simulation, job_id, req, user_id)
     return {"job_id": job_id, "status": "pending"}
