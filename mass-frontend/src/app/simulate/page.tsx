@@ -240,8 +240,8 @@ export default function SimulatePage() {
             MASS
           </Link>
           <div className="flex items-center gap-md">
-            <Link href="/" className="font-label-mono text-on-surface-variant hover:text-primary transition-colors">
-              ← Back
+            <Link href={session ? '/dashboard' : '/'} className="font-label-mono text-on-surface-variant hover:text-primary transition-colors">
+              ← Back to {session ? 'Dashboard' : 'Home'}
             </Link>
           </div>
         </nav>

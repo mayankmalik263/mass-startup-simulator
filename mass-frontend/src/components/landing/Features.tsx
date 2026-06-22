@@ -5,7 +5,7 @@ const features = [
     icon: 'groups',
     title: 'Multi-Agent Debate Engine',
     description:
-      'Proprietary logic handles asynchronous debates between up to 10 specialized agents simultaneously.',
+      'Proprietary logic handles asynchronous debates between 5 specialized agents plus a consensus-evaluating Supervisor.',
     span: 'md:col-span-3',
   },
   {
@@ -17,20 +17,20 @@ const features = [
   },
   {
     icon: 'public',
-    title: 'Market-Aware Recommendations',
-    description: 'Real-time data integration for up-to-date market analysis.',
+    title: 'Context-Aware Persona Processing',
+    description: 'Agents adapt their reasoning based on your specific target audience, market, and constraints.',
     span: 'md:col-span-2',
   },
   {
     icon: 'data_object',
     title: 'Structured Business Plans',
-    description: 'Export directly to PDF or JSON for your deck.',
+    description: 'View directly in the UI or export to raw JSON for developer workflows.',
     span: 'md:col-span-2',
   },
   {
     icon: 'bolt',
     title: 'Fast API-Powered Simulations',
-    description: 'Sub-60 second simulation turnaround times.',
+    description: 'Fast, streamable simulation execution powered by Server-Sent Events.',
     span: 'md:col-span-2',
   },
 ];

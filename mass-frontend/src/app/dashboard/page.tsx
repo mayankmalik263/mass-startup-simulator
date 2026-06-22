@@ -139,10 +139,13 @@ export default function DashboardPage() {
               </div>
               <div className="font-label-mono text-[10px] text-on-surface-variant mb-md">AI DEBATE ROUNDS</div>
               <div className="font-display text-[40px] font-extrabold text-on-surface leading-none">
-                {loading ? '-' : simulations.length * 3}+
+                {loading ? '-' : simulations.length === 0 ? '0' : `${simulations.length * 3}+`}
               </div>
             </div>
-            <div className="border border-outline-variant bg-surface-container-lowest p-lg relative overflow-hidden">
+            <div
+              className="border border-outline-variant bg-surface-container-lowest p-lg relative overflow-hidden cursor-help"
+              title="Upgrade to Pro to unlock evaluation scoring"
+            >
               <div className="absolute top-0 right-0 p-lg opacity-5">
                 <span className="material-symbols-outlined text-[64px]">star</span>
               </div>

@@ -11,14 +11,14 @@
     <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Frontend-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" /></a>
-    <a href="https://mass-multi-agent-startup-simulator.vercel.app/"><img src="https://img.shields.io/badge/Live_Demo-Play_Now-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
+    <a href="https://mass-sim.vercel.app/"><img src="https://img.shields.io/badge/Live_Demo-Play_Now-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
 </p>
 
 ---
 
 ## 🚀 Live Demo
 
-Try the simulator right now at: **[mass-multi-agent-startup-simulator.vercel.app](https://mass-multi-agent-startup-simulator.vercel.app/)**
+Try the simulator right now at: **[mass-sim.vercel.app](https://mass-sim.vercel.app/)**
 
 ---
 

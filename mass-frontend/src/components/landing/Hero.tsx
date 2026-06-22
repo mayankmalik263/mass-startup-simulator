@@ -60,12 +60,12 @@ export default function Hero() {
           >
             Start Simulation
           </Link>
-          <button
-            onClick={scrollToProcess}
-            className="w-full md:w-auto bg-transparent border border-outline text-on-surface font-label-mono px-xl py-md rounded hover:bg-surface-container-low transition-all"
+          <Link
+            href="/#process"
+            className="w-full md:w-auto bg-transparent border border-outline text-on-surface font-label-mono px-xl py-md rounded hover:bg-surface-container-low transition-all inline-block"
           >
             How It Works
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -80,10 +80,11 @@ export default function Hero() {
             <div className="w-3 h-3 bg-tertiary rounded-full"></div>
             <div className="w-3 h-3 bg-primary rounded-full"></div>
           </div>
-          <div className="font-label-mono text-[10px] text-outline">TERMINAL_v0.9.4 // STATUS: STANDBY</div>
+          <div className="font-label-mono text-[10px] text-outline">TERMINAL_v1.2.0-STABLE // STATUS: STANDBY</div>
         </div>
 
-        <div className="relative h-[400px] flex items-center justify-center">
+        {/* Desktop Council Visualization */}
+        <div className="hidden md:flex relative h-[400px] items-center justify-center">
           {/* Central Node */}
           <div className="z-20 w-24 h-24 bg-black border-2 border-primary flex items-center justify-center glow-border">
             <span className="material-symbols-outlined text-primary text-[40px]">hub</span>
@@ -148,6 +149,36 @@ export default function Hero() {
             <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="150" x2="460" y1="280" y2="230" />
             <line className="line-animation" stroke="#8B5CF6" strokeWidth="1" x1="850" x2="540" y1="280" y2="230" />
           </svg>
+        </div>
+
+        {/* Mobile Council Visualization (Stacked List) */}
+        <div className="md:hidden flex flex-col gap-md py-md">
+          <div className="flex items-center gap-md border border-outline p-md bg-black">
+            <span className="material-symbols-outlined text-primary text-[24px]">hub</span>
+            <div className="font-label-mono text-sm text-primary">Supervisor Node</div>
+          </div>
+          <div className="grid grid-cols-2 gap-sm pl-xl border-l border-primary/30 ml-md">
+            <div className="border border-outline bg-surface-container-highest p-sm flex items-center gap-sm">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">person_apron</span>
+              <span className="font-label-mono text-xs">CEO</span>
+            </div>
+            <div className="border border-outline bg-surface-container-highest p-sm flex items-center gap-sm">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">payments</span>
+              <span className="font-label-mono text-xs">CFO</span>
+            </div>
+            <div className="border border-outline bg-surface-container-highest p-sm flex items-center gap-sm">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">campaign</span>
+              <span className="font-label-mono text-xs">CMO</span>
+            </div>
+            <div className="border border-outline bg-surface-container-highest p-sm flex items-center gap-sm">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">inventory_2</span>
+              <span className="font-label-mono text-xs">CPO</span>
+            </div>
+            <div className="col-span-2 border border-outline bg-surface-container-highest p-sm flex items-center justify-center gap-sm">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">trending_up</span>
+              <span className="font-label-mono text-xs">CRO</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
