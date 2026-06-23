@@ -662,10 +662,10 @@ function ActivityLogEntry({ event }: { event: AgentEvent }) {
           {event.conflicts && event.conflicts.length > 0 && (
             <div className="mt-xs">
               <div className="font-label-mono text-[10px] text-error/80 mb-[2px]">CONFLICTS:</div>
-              {event.conflicts.map((c, i) => (
+              {event.conflicts.map((c: any, i) => (
                 <div key={i} className="font-body-sm text-xs text-on-surface-variant flex items-start gap-xs">
                   <span className="text-error mt-[1px]">•</span>
-                  <span>{c}</span>
+                  <span>{typeof c === 'string' ? c : c.title ? `${c.title}: ${c.description}` : JSON.stringify(c)}</span>
                 </div>
               ))}
             </div>
@@ -675,10 +675,10 @@ function ActivityLogEntry({ event }: { event: AgentEvent }) {
           {event.decisions && event.decisions.length > 0 && (
             <div className="mt-xs">
               <div className="font-label-mono text-[10px] text-primary/80 mb-[2px]">LOCKED DECISIONS:</div>
-              {event.decisions.map((d, i) => (
+              {event.decisions.map((d: any, i) => (
                 <div key={i} className="font-body-sm text-xs text-on-surface-variant flex items-start gap-xs">
                   <span className="text-primary mt-[1px]">→</span>
-                  <span>{d}</span>
+                  <span>{typeof d === 'string' ? d : d.title ? `${d.title}: ${d.description}` : JSON.stringify(d)}</span>
                 </div>
               ))}
             </div>
