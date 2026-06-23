@@ -1,4 +1,4 @@
-from openai import OpenAI
+from groq import Groq
 import os
 import json
 from dotenv import load_dotenv
@@ -8,10 +8,7 @@ from models import StartupBusinessPlan
 
 load_dotenv()
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
 def generate_json_template(model: type[BaseModel]) -> dict:
@@ -57,7 +54,7 @@ def get_schema_hint() -> str:
 
 def _call_llm(prompt: str, temperature: float = 0.0) -> str:
     response = client.chat.completions.create(
-        model="openai/gpt-oss-120b:free",
+        model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=temperature
     )

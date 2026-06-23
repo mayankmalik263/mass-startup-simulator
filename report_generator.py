@@ -1,14 +1,11 @@
-from openai import OpenAI
+from groq import Groq
 import os
 from dotenv import load_dotenv
 from agents.context_block import build_context_block
 
 load_dotenv()
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
 def generate_report(state: dict) -> str:
@@ -153,7 +150,7 @@ If a number doesn't check out — fix it, don't copy it.
 """
 
     response = client.chat.completions.create(
-        model="openai/gpt-oss-120b:free",
+        model="llama-3.3-70b-versatile",
         messages=[
             {"role": "user", "content": prompt}
         ]

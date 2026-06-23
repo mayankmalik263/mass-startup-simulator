@@ -1,4 +1,4 @@
-from openai import OpenAI
+from groq import Groq
 import os
 from dotenv import load_dotenv
 from .context_block import build_context_block
@@ -6,10 +6,7 @@ from .llm_router import get_llm_model
 
 load_dotenv()
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 CEO_PERSONA = """
 REASONING LENS — apply in this order:

@@ -97,12 +97,9 @@ def simulate(req: SimulateRequest, background_tasks: BackgroundTasks, user_id: s
 @app.post("/clarify")
 def clarify_idea(req: ClarifyRequest):
     from agents.llm_router import get_llm_model
-    from openai import OpenAI
+    from groq import Groq
     import os
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.getenv("OPENROUTER_API_KEY")
-    )
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     prompt = f"""
 You are an expert startup consultant. A founder has given you this raw startup idea:
 "{req.idea}"
@@ -173,7 +170,7 @@ def get_simulation(job_id: str):
 @app.post("/simulate/{job_id}/chat")
 def chat_with_council(job_id: str, req: ChatRequest):
     from agents.llm_router import get_llm_model
-    from openai import OpenAI
+    from groq import Groq
     import os
 
     job = get_job(job_id)
@@ -192,10 +189,7 @@ If the founder addresses a specific agent (e.g. "@Finance" or "Hey CEO"), answer
 Keep your answer concise, brutally honest, and specific to their business constraints.
 """
 
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.getenv("OPENROUTER_API_KEY")
-    )
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     formatted_messages = [{"role": "system", "content": system_prompt}]
     for m in req.messages:

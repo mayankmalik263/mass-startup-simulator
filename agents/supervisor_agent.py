@@ -1,4 +1,4 @@
-from openai import OpenAI
+from groq import Groq
 import os
 import json
 from dotenv import load_dotenv
@@ -7,10 +7,7 @@ from .llm_router import get_llm_model
 
 load_dotenv()
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 SUPERVISOR_PERSONA = """
 You are the Strict Consensus Evaluator. Your ONLY job is to compare the CEO's strategy
