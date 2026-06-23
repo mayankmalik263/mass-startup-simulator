@@ -97,13 +97,17 @@ export default function HistoryDetailPage() {
               <p className="font-body-lg text-on-surface italic">"{simulation.idea}"</p>
               
               {/* Context display */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-md mt-md pt-md border-t border-outline-variant/30">
-                {['target_audience', 'market', 'revenue_model', 'constraints'].map(key => (
-                  <div key={key}>
-                    <div className="font-label-mono text-[10px] text-outline mb-[2px]">{key.replace('_', ' ').toUpperCase()}</div>
-                    <div className="font-body-sm text-on-surface-variant truncate">{simulation[key] || '-'}</div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-md mt-md pt-md border-t border-outline-variant/30">
+                <div className="md:col-span-1">
+                  <div className="font-label-mono text-[10px] text-outline mb-[2px]">MARKET</div>
+                  <div className="font-body-sm text-on-surface-variant">{simulation.market || '-'}</div>
+                </div>
+                <div className="md:col-span-3">
+                  <div className="font-label-mono text-[10px] text-outline mb-[2px]">BUSINESS CONTEXT</div>
+                  <div className="font-body-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                    {simulation.constraints?.replace('. Context:', '\n') || '-'}
                   </div>
-                ))}
+                </div>
               </div>
             </div>
 
