@@ -8,11 +8,11 @@ def get_llm_model(tier: str) -> str:
     """
     if tier.lower() == "pro":
         # Dev fallback: Llama 3.3 70B is frequently rate-limited on the free tier, 
-        # so using Gemini 2.0 Flash as the most stable free model for dev.
-        return "google/gemini-2.0-flash-exp:free"
+        # so using openrouter/free router as a fallback to avoid 429s.
+        return "meta-llama/llama-3.3-70b-instruct:free,openrouter/free"
         
         # Production ready (commented out until launch):
         # return "anthropic/claude-3.5-sonnet"
     else:
         # Default Free Tier
-        return "google/gemini-2.0-flash-exp:free"
+        return "openrouter/free"
