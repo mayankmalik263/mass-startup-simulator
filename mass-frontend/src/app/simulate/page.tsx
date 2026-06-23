@@ -359,64 +359,9 @@ export default function SimulatePage() {
                 onChange={(e) => setForm({ ...form, idea: e.target.value })}
                 placeholder="Describe your startup idea in a few sentences..."
                 required
-                rows={4}
+                rows={6}
                 className="w-full bg-transparent border-b border-outline focus:border-primary outline-none text-on-surface font-body-lg py-sm resize-none transition-colors placeholder:text-on-surface-variant/40"
               />
-            </div>
-
-            {/* Context fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-              <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-                <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
-                  Target Audience
-                </label>
-                <input
-                  type="text"
-                  value={form.target_audience}
-                  onChange={(e) => setForm({ ...form, target_audience: e.target.value })}
-                  placeholder="e.g. college students, B2B SaaS teams"
-                  className="w-full bg-transparent border-b border-outline focus:border-primary outline-none text-on-surface font-body-sm py-xs transition-colors placeholder:text-on-surface-variant/40"
-                />
-              </div>
-
-              <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-                <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
-                  Market / Geography
-                </label>
-                <input
-                  type="text"
-                  value={form.market}
-                  onChange={(e) => setForm({ ...form, market: e.target.value })}
-                  placeholder="e.g. India, US, global"
-                  className="w-full bg-transparent border-b border-outline focus:border-primary outline-none text-on-surface font-body-sm py-xs transition-colors placeholder:text-on-surface-variant/40"
-                />
-              </div>
-
-              <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-                <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
-                  Revenue Model
-                </label>
-                <input
-                  type="text"
-                  value={form.revenue_model}
-                  onChange={(e) => setForm({ ...form, revenue_model: e.target.value })}
-                  placeholder="e.g. freemium, subscription, B2B enterprise"
-                  className="w-full bg-transparent border-b border-outline focus:border-primary outline-none text-on-surface font-body-sm py-xs transition-colors placeholder:text-on-surface-variant/40"
-                />
-              </div>
-
-              <div className="border border-outline-variant bg-surface-container-lowest p-lg">
-                <label className="font-label-mono text-on-surface-variant mb-sm block uppercase text-[11px]">
-                  Constraints
-                </label>
-                <input
-                  type="text"
-                  value={form.constraints}
-                  onChange={(e) => setForm({ ...form, constraints: e.target.value })}
-                  placeholder="e.g. bootstrapped, mobile-first"
-                  className="w-full bg-transparent border-b border-outline focus:border-primary outline-none text-on-surface font-body-sm py-xs transition-colors placeholder:text-on-surface-variant/40"
-                />
-              </div>
             </div>
 
             {/* Submit */}
