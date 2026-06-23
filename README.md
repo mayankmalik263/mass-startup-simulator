@@ -58,7 +58,7 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 - Simulation flow that collects startup idea, runs the clarification questionnaire, and then starts the simulation.
 - **Real-time SSE streaming** — the UI syncs with the backend so the agent grid highlights only the agent that's actually running.
 - **Live activity feed** — shows each agent's summary, supervisor consensus verdicts (agreed / not agreed / forced after 3 rounds), debate loop transitions, and round numbers.
-- Structured results displayed in styled cards — pricing tiers, financial snapshot, revenue targets, and more.
+- **Dynamic Masonry Reports** — Structured results are displayed in a fluid masonry layout that adapts beautifully to the shape of the AI output, skipping empty cards.
 - **Comprehensive Documentation & Legal Pages** — included `/docs`, `/privacy`, and `/terms` directly integrated into the app.
 - **Vercel Analytics** integrated for privacy-friendly tracking.
 
@@ -95,7 +95,7 @@ All agents read from and write to one shared state object. That keeps the workfl
 ## 📦 Key Features
 
 - **Blazing Fast Inference:** Powered by Groq's LPU inference engine running the Llama 3.3 70B Versatile model.
-- **Dynamic Business Context:** The system roots all strategy in Y-Combinator / Lean Startup frameworks. Constraints like "bootstrapped vs venture-backed" strictly dictate the generated plans, and currencies automatically adapt based on your market.
+- **Dynamic Business Context:** The system roots all strategy in Y-Combinator / Lean Startup frameworks. Constraints like "bootstrapped vs venture-backed" strictly dictate the generated plans, and **currencies/benchmarks automatically adapt** using LLM reasoning based on your target market (e.g., using INR/UPI for Indian cities, USD/Stripe globally).
 - **Role-separated agents:** each agent has a distinct business lens and reasoning persona.
 - **Consensus gating:** the supervisor decides whether CEO and Finance need another round.
 - **Conflict capture:** disagreements are recorded instead of being silently overwritten.
