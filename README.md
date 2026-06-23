@@ -7,7 +7,7 @@
 <p align="center">
     <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" /></a>
     <a href="https://www.langchain.com/langgraph"><img src="https://img.shields.io/badge/LangGraph-State%20Machine-22C55E?style=for-the-badge" alt="LangGraph" /></a>
-    <a href="https://openrouter.ai/"><img src="https://img.shields.io/badge/OpenRouter-OpenAI%20Compatible-F97316?style=for-the-badge" alt="OpenRouter" /></a>
+    <a href="https://groq.com/"><img src="https://img.shields.io/badge/Groq-Llama%203.3%2070B-F55036?style=for-the-badge" alt="Groq" /></a>
     <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Frontend-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
     <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="MIT License" /></a>
@@ -28,11 +28,14 @@ MASS is a multi-agent startup simulator that turns a single business idea into a
 
 The result is a practical startup brief covering the mission, problem statement, target customer, business model, financial snapshot, go-to-market plan, MVP scope, revenue targets, key conflicts, and a final verdict.
 
-The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-agent orchestration and a **Next.js frontend** with a terminal-inspired dark UI where users can submit ideas, watch agents debate in real time via **Server-Sent Events (SSE)**, and view structured results.
+The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-agent orchestration and a **Next.js frontend** with a terminal-inspired dark UI where users can submit ideas, watch agents debate in real time via **Server-Sent Events (SSE)**, interact with the council post-simulation, and view structured results.
 
 ---
 
 ## 🚀 What It Does
+
+### Pre-Simulation Clarification
+- You enter your startup idea, and the AI generates 3 dynamic, multiple-choice questions to pinpoint your target market, constraints, and revenue model before the simulation even begins.
 
 ### Multi-agent debate loop
 - CEO proposes the startup direction and initial strategy.
@@ -41,6 +44,10 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 - Marketing, Product, and Sales then refine the plan from their own perspectives.
 - The final report reflects the negotiated output, not just a single model response.
 
+### Post-Simulation Chat (Pro Feature)
+- Once the report is generated, you can chat directly with the entire agent council.
+- Ask general questions, or target specific agents (e.g., "@Finance why is the CAC so high?") to get brutally honest, persona-driven answers based on your generated plan.
+
 ### Structured output
 - Generates a readable business report.
 - Extracts a validated structured business plan (Pydantic models).
@@ -48,7 +55,7 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 
 ### Web interface
 - Terminal-inspired dark landing page with agent council visualization.
-- Simulation form that collects startup idea + context (audience, market, revenue model, constraints).
+- Simulation flow that collects startup idea, runs the clarification questionnaire, and then starts the simulation.
 - **Real-time SSE streaming** — the UI syncs with the backend so the agent grid highlights only the agent that's actually running.
 - **Live activity feed** — shows each agent's summary, supervisor consensus verdicts (agreed / not agreed / forced after 3 rounds), debate loop transitions, and round numbers.
 - Structured results displayed in styled cards — pricing tiers, financial snapshot, revenue targets, and more.
@@ -56,7 +63,7 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 - **Vercel Analytics** integrated for privacy-friendly tracking.
 
 ### API
-- FastAPI endpoint for programmatic use.
+- FastAPI endpoints for programmatic use.
 - Background job processing with status polling.
 - **SSE streaming endpoint** for real-time agent activity events.
 - CORS-enabled for frontend integration.
@@ -67,7 +74,7 @@ The project ships with a **Python backend** (LangGraph + FastAPI) for the multi-
 
 ```mermaid
 flowchart TD
-        A[User enters startup idea] --> B[Context intake]
+        A[User enters startup idea] --> B[Clarify Questionnaire]
         B --> C[LangGraph orchestrator]
         C --> D[CEO]
         D --> E[Finance]
@@ -78,7 +85,7 @@ flowchart TD
         H --> I[Sales]
         I --> J[Final report generator]
         J --> K[Structured extractor]
-        K --> L[Saved JSON + TXT output]
+        K --> L[Post-Simulation Chat]
 ```
 
 All agents read from and write to one shared state object. That keeps the workflow deterministic enough to inspect, while still allowing the LLMs to debate and revise their positions.
@@ -87,14 +94,15 @@ All agents read from and write to one shared state object. That keeps the workfl
 
 ## 📦 Key Features
 
+- **Blazing Fast Inference:** Powered by Groq's LPU inference engine running the Llama 3.3 70B Versatile model.
+- **Dynamic Business Context:** The system roots all strategy in Y-Combinator / Lean Startup frameworks. Constraints like "bootstrapped vs venture-backed" strictly dictate the generated plans, and currencies automatically adapt based on your market.
 - **Role-separated agents:** each agent has a distinct business lens and reasoning persona.
 - **Consensus gating:** the supervisor decides whether CEO and Finance need another round.
 - **Conflict capture:** disagreements are recorded instead of being silently overwritten.
-- **Context-aware prompting:** user inputs like target audience, market, revenue model, and constraints influence all agent outputs.
 - **Structured extraction:** the final report is converted into a typed business-plan object with retry-on-validation-failure.
+- **Interactive Council Chat:** Chat with the specific agents that built your plan after it's finished.
 - **Web UI:** Terminal-inspired Next.js frontend with live streaming, a one-time free demo flow, and an authenticated modern dashboard.
 - **SaaS Ready:** Full Supabase Authentication, Row Level Security (RLS) data isolation, and dynamic paywalls.
-- **API-ready design:** The FastAPI layer exposes the simulator for any external client.
 
 ---
 
@@ -103,13 +111,12 @@ All agents read from and write to one shared state object. That keeps the workfl
 | Layer | Tool |
 |---|---|
 | Agent orchestration | LangGraph state machine |
-| LLM access | OpenRouter (OpenAI-compatible) |
+| LLM access | Groq API (Llama 3.3 70B) |
 | Backend | Python + FastAPI |
 | Real-time streaming | Server-Sent Events (SSE) |
 | Frontend | Next.js 16, Tailwind CSS v4, TypeScript |
 | Shared state | TypedDict |
 | Structured output | Pydantic models |
-| Output formats | JSON, TXT, structured plan |
 
 ---
 
@@ -123,24 +130,26 @@ MASS/
 │   ├── marketing_agent.py    # Alex Hormozi reasoning persona
 │   ├── product_agent.py      # Brian Chesky (Airbnb) reasoning persona
 │   ├── sales_agent.py        # Jason Lemkin (SaaStr) reasoning persona
-│   └── supervisor_agent.py   # Consensus evaluator
+│   ├── supervisor_agent.py   # Consensus evaluator
+│   ├── context_block.py      # Dynamic lean startup/YC constraints
+│   └── llm_router.py         # Handles free/pro tier model routing (Groq)
 ├── mass-frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── globals.css         # Tailwind v4 theme + design tokens
-│   │   │   ├── layout.tsx          # Root layout with fonts
-│   │   │   ├── page.tsx            # Landing page route
-│   │   │   ├── simulate/page.tsx   # Simulation form + live SSE results
-│   │   │   └── login/page.tsx      # Login placeholder
-│   │   ├── components/landing/     # 8 landing page components
-│   │   ├── lib/api.ts              # FastAPI + SSE stream client
-│   │   └── types/simulation.ts     # TypeScript types + SSE event types
+│   │   │   ├── globals.css             # Tailwind v4 theme + design tokens
+│   │   │   ├── layout.tsx              # Root layout with fonts
+│   │   │   ├── page.tsx                # Landing page route
+│   │   │   ├── simulate/page.tsx       # Intake, Clarify, and Live SSE flow
+│   │   │   ├── dashboard/[id]/page.tsx # Pro Chat & History dashboard
+│   │   │   └── login/page.tsx          # Authentication
+│   │   ├── components/                 # UI components
+│   │   ├── lib/api.ts                  # FastAPI endpoints + SSE stream client
+│   │   └── types/simulation.ts         # TypeScript types
 │   ├── package.json
 │   └── tsconfig.json
 ├── api.py                    # FastAPI endpoints + SSE streaming
 ├── event_bus.py              # In-memory pub/sub for real-time events
 ├── graph_orchestrator.py     # LangGraph state machine + event emission
-├── intake.py                 # User context collection
 ├── job_store.py              # In-memory job tracking
 ├── main.py                   # CLI entry point
 ├── models.py                 # Pydantic business plan models
@@ -158,7 +167,7 @@ MASS/
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- An OpenRouter API key
+- A Groq API key
 
 ### Backend setup
 
@@ -172,7 +181,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 copy .env.example .env
-# Add your OPENROUTER_API_KEY to .env
+# Add your GROQ_API_KEY to .env
 ```
 
 ### Frontend setup
@@ -195,47 +204,21 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### CLI mode
-
-If you prefer the command line:
-
-```bash
-python main.py
-```
-
-Then enter your startup idea and optional context details when prompted.
-
 ---
 
 ## 🌐 API
 
-The FastAPI service in [api.py](api.py) exposes four endpoints:
+The FastAPI service in [api.py](api.py) exposes the following endpoints:
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/` | Service health check |
+| `POST` | `/clarify` | Takes a raw idea and returns 3 multiple-choice questions |
 | `POST` | `/simulate` | Start a new simulation (returns `job_id`) |
 | `GET` | `/simulate/{job_id}` | Poll job status and fetch results |
 | `GET` | `/simulate/{job_id}/stream` | SSE stream of real-time agent activity events |
-
-### Example request
-
-```bash
-curl -X POST http://localhost:8000/simulate \
-  -H "Content-Type: application/json" \
-  -d '{"idea": "AI-powered resume builder for college students", "market": "India", "revenue_model": "freemium"}'
-```
-
-### Example response
-
-```json
-{
-  "job_id": "abc-123",
-  "status": "pending"
-}
-```
-
-Poll `GET /simulate/abc-123` until status becomes `done`, then the response includes the full `result` object with `final_report`, `business_plan`, `conflicts`, `debate_rounds`, and `messages_count`.
+| `POST` | `/simulate/{job_id}/chat` | Ask follow-up questions to the generated council |
+| `GET` | `/simulations` | List user's past simulations (Supabase Auth required) |
 
 ---
 
@@ -254,6 +237,8 @@ The best part is that I ended up building something I genuinely wanted for mysel
 ## 🔭 Future Improvements
 
 - Add a stronger evaluation framework to measure output quality and consistency across runs.
+- ~~Add follow-up Q&A capability with the agent council~~ ✅ Done — Added Pro Chat interface (June 23, 2026).
+- ~~Migrate to faster inference for real-time agent execution~~ ✅ Done — Migrated to Groq with Llama 3.3 70B (June 23, 2026).
 - ~~Tighten structured validation across agent outputs so the final plan is more reliable.~~ ✅ Done — Added strict validation and retry logic (June 22, 2026).
 - ~~Build a history layer so simulation runs can be compared, replayed, and reused.~~ ✅ Done — Integrated Supabase database (June 22, 2026).
 - ~~Add authentication so users can save and revisit their simulation results.~~ ✅ Done — Added Supabase Auth, Row Level Security, Free Demo Mode, and Dashboard UI (June 22, 2026).
